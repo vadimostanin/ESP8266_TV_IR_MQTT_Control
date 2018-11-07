@@ -36,6 +36,8 @@ const char *mqtt_user = "xtdtvxau"; // Логи от сервер
 const char *mqtt_pass = "C0f1bz0V2Zrz"; // Пароль от сервера
 const char *mqtt_topic_tv_hitach_youtube_on = "tv_hitachi_youtube_on";
 
+uint16_t rawDataSomeCommand[71] = {9018, 4544,  506, 588,  534, 576,  506, 588,  504, 598,  504, 1708,  506, 598,  504, 598,  504, 588,  506, 1698,  532, 1672,  506, 1698,  506, 1708,  506, 588,  530, 1674,  506, 1698,  506, 1708,  506, 588,  504, 598,  506, 1708,  506, 590,  504, 1708,  506, 588,  506, 606,  504, 588,  504, 1700,  504, 1698,  506, 596,  506, 1708,  506, 588,  506, 1698,  506, 1698,  506, 1708,  506, 39924,  9020, 2276,  506};  // NEC 8F728D7
+
 WiFiClient wclient; 
 PubSubClient client(mqtt_server, mqtt_port, wclient);
 
@@ -56,9 +58,9 @@ void setup()
 {
   Serial.begin( 9600 );
   irrecv.enableIRIn();  // Start the receiver
-  while (!Serial)  // Wait for the serial connection to be establised.
+  while( ! Serial )  // Wait for the serial connection to be establised.
   {
-    delay(100);
+    delay( 100 );
   }
   Serial.println();
   Serial.print( "IRrecvDemo is now running and waiting for IR message on Pin " );
