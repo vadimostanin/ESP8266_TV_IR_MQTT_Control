@@ -103,7 +103,7 @@ void NetworkingTask::publishPingMQTT()
     mClient.publish( "outTopic", msg );
 
     // Once connected, publish an announcement...
-    mClient.publish( "inTopic", "incomming message" );
+//    mClient.publish( "inTopic", "incomming message" );
   }
 }
 
@@ -138,11 +138,9 @@ void NetworkingTask::reconnectMQTT()
 
 void NetworkingTask::addListener( const std::string & topic, const std::function<void()> & callback )
 {
-  Serial.print( "addListener 1 topic.c_str()=" );
+  Serial.print( "addListener topic.c_str()=" );
   Serial.println( topic.c_str() );
   mClient.subscribe( topic.c_str() );
-  Serial.println( "addListener 2" );
   mListeners[topic] = callback;
-  Serial.println( "addListener 3" );
 }
 
