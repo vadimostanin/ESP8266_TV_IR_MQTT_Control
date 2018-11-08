@@ -14,6 +14,7 @@ public:
   PubSubClient& getPubSubClient();
 //  void operator()( char* topic, unsigned char* payload, unsigned int length );
   static void callbackTopic( char* topic, unsigned char* payload, unsigned int length );
+  
 private:
   bool connectWiFi();
   void reconnectMQTT();

@@ -1,4 +1,6 @@
 #define _TASK_STD_FUNCTION
+#define _TASK_SLEEP_ON_IDLE_RUN
+#define ARDUINO_ARCH_ESP8266
 #include <TaskScheduler.h>
 
 #include "IRTVControlTask.h"
@@ -42,11 +44,8 @@ void setup()
 void handleIRTopic()
 {
   Serial.println( "Catch signal to start youtube on Hitachi TV" );
-  Serial.println( "Disable previous task" );
-  controlTask.disable();
-  Serial.println( "Delete previous task" );
-  taskRunnerAsync.deleteTask( controlTask );
   Serial.println( "Add new task" );
+  controlTask.setIterations( controlTask.getIterations() + 1 );
   taskRunnerAsync.addTask( controlTask );
   Serial.println( "Enable new task" );
   controlTask.enable();

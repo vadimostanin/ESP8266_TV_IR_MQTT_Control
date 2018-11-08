@@ -49,7 +49,7 @@ void IRTVControlTask::operator()()
   Serial.println( "TV Wait after smart was launched" );
   for( int i = 0 ; i < 30 ; i++ )
   {
-    delay( 1 * 1000 );
+    delay( 1 * 10 );
   }
 
   Serial.println( "TV navigating to youtube begin" );
