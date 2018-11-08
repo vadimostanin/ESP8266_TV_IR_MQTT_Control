@@ -1,6 +1,9 @@
 #define _TASK_STD_FUNCTION
 #define _TASK_SLEEP_ON_IDLE_RUN
 #define ARDUINO_ARCH_ESP8266
+#define _TASK_STATUS_REQUEST
+#define _TASK_TIMECRITICAL
+#define _TASK_PRIORITY
 #include <TaskScheduler.h>
 
 #include "IRTVControlTask.h"
@@ -13,7 +16,7 @@ Scheduler taskRunnerAsync;
 IRTVControlTask IRTVControl;
 NetworkingTask Networking;
 ClientTask pubSubClient( Networking.getPubSubClient() );
-Task controlTask( 0, 1, IRTVControl );
+Task controlTask( 0, 0, IRTVControl );
 Task netTask( 0, TASK_FOREVER, Networking );
 Task pubSubClientTask( 0, TASK_FOREVER, pubSubClient );
 
@@ -45,7 +48,7 @@ void handleIRTopic()
 {
   Serial.println( "Catch signal to start youtube on Hitachi TV" );
   Serial.println( "Add new task" );
-  controlTask.setIterations( controlTask.getIterations() + 1 );
+//  controlTask.setIterations( controlTask.getIterations() + 1 );
   taskRunnerAsync.addTask( controlTask );
   Serial.println( "Enable new task" );
   controlTask.enable();
