@@ -48,7 +48,7 @@ void handleIRTopic()
 {
   Serial.println( "Catch signal to start youtube on Hitachi TV" );
   Serial.println( "Add new task" );
-//  controlTask.setIterations( controlTask.getIterations() + 1 );
+  controlTask.setIterations( controlTask.getIterations() + 1 );
   taskRunnerAsync.addTask( controlTask );
   Serial.println( "Enable new task" );
   controlTask.enable();
