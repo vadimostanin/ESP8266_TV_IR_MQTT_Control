@@ -15,7 +15,9 @@ uint16_t rawDataJoystickRightButtonUp[19] = {946, 828,  950, 826,  1840, 824,  9
 uint16_t rawDataJoystickEnterButtonDown[21] = {940, 836,  1830, 832,  942, 834,  938, 832,  944, 1702,  936, 838,  942, 834,  938, 840,  1828, 1704,  1828, 1710,  942};  // RC5 F5
 uint16_t rawDataJoystickEnterButtonUp[21] = {950, 830,  1828, 838,  936, 834,  940, 828,  944, 1700,  942, 834,  940, 836,  942, 834,  1832, 1706,  1830, 1704,  942};  // RC5 F5
 
-IRTVControlTask::IRTVControlTask() : mIrLed( 4 ), mIrSend( mIrLed )
+#define SIZEOF( ARRAY ) ( sizeof( ARRAY ) / sizeof( ARRAY[0] ) )
+
+IRTVControlTask::IRTVControlTask() : mIrLed( 4 ), mIrSend( mIrLed ), mSequenceCounter( 0 ), mLoopCounter( 0 )
 {
 }
 
@@ -24,58 +26,160 @@ void IRTVControlTask::init()
   mIrSend.begin();
 }
 
-#define SIZEOF( ARRAY ) ( sizeof( ARRAY ) / sizeof( ARRAY[0] ) )
+void IRTVControlTask::resetSequence()
+{
+  mSequenceCounter = 0;
+}
 
 void IRTVControlTask::operator()()
 {
-  Serial.println( "TV Powering-on button down" );
-  mIrSend.sendRaw( rawDataPowerOnButtonDown, SIZEOF( rawDataPowerOnButtonDown ), 38 );
-  delay( 100 );
-  Serial.println( "TV Powering-on button up" );
-  mIrSend.sendRaw( rawDataPowerOnButtonUp, SIZEOF( rawDataPowerOnButtonUp ), 38 );
-
-  Serial.println( "TV Wait after TV was powered-on" );
-  for( int i = 0 ; i < 30 ; i++ )
+//  Serial.print( "mSequenceCounter=" );Serial.println( mSequenceCounter );
+  const int minDelay = 1000;
+  mLoopCounter++;
+  Serial.print( "mLoopCounter=" );Serial.println( mLoopCounter );
+  switch( mSequenceCounter )
   {
-    delay( 1 * 1000 );
+    case 0:
+    {
+      Serial.println( "TV Powering-on button down" );
+      mIrSend.sendRaw( rawDataPowerOnButtonDown, SIZEOF( rawDataPowerOnButtonDown ), 38 );
+      delay( 100 );
+      Serial.println( "TV Powering-on button up" );
+      mIrSend.sendRaw( rawDataPowerOnButtonUp, SIZEOF( rawDataPowerOnButtonUp ), 38 );
+
+      mSequenceCounter++;
+
+      break;
+    }
+    case 1:
+    {
+      Serial.println( "TV Wait after TV was powered-on" );
+      mSequenceCounter++;
+      break;
+    }
+    case 2:
+    {
+//      Serial.print( "mDelayTimeSum=" );Serial.println( mDelayTimeSum );
+      delay( minDelay );
+      mDelayTimeSum += minDelay;
+      if( mDelayTimeSum > 30 * 1000 )
+      {
+//        Serial.println( "if( mDelayTimeSum > 300 * minDelay )" );
+        mDelayTimeSum = 0;
+        mSequenceCounter++;
+      }
+      break;
+    }
+    case 3:
+    {  
+      Serial.println( "TV Smart launching button down" );
+      mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), 38 );
+      delay( 100 );
+      Serial.println( "TV Smart launching button up" );
+      mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), 38 );
+
+      mSequenceCounter++;
+      break;
+    }
+    case 4:
+    {
+      Serial.println( "TV Wait after smart was launched" );
+      mSequenceCounter++;
+      break;
+    }
+    case 5:
+    {
+//      Serial.print( "mDelayTimeSum=" );Serial.println( mDelayTimeSum );
+      delay( minDelay );
+      mDelayTimeSum += minDelay;
+      if( mDelayTimeSum > 30 * 1000 )
+      {
+        mDelayTimeSum = 0;
+        mSequenceCounter++;
+      }
+      break;
+    }
+    case 6:
+    {
+      Serial.println( "TV navigating to youtube begin" );
+      mSequenceCounter++;
+      break;
+    }
+    case 7:
+    case 9:
+    case 11:
+    case 13:
+    {
+      Serial.println( "TV navigating down" );
+      mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), 38 );
+      delay( 100 );
+      mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), 38 );
+      mSequenceCounter++;
+      mDelayTimeSum = 0;
+      break;
+    }
+    case 8:
+    case 10:
+    case 12:
+    case 14:
+    {
+      delay( minDelay );
+      mDelayTimeSum += minDelay;
+      if( mDelayTimeSum > 1 * 1000 )
+      {
+        mDelayTimeSum = 0;
+        mSequenceCounter++;
+      }
+      break;
+    }
+    case 15:
+    case 17:
+    case 19:
+    {
+      Serial.println( "TV navigating right" );
+      mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), 38 );
+      delay( 100 );
+      mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), 38 );
+      mSequenceCounter++;
+      break;
+    }
+    case 16:
+    case 18:
+    case 20:
+    {
+      delay( minDelay );
+      mDelayTimeSum += minDelay;
+      if( mDelayTimeSum > 1 * 1000 )
+      {
+        mDelayTimeSum = 0;
+        mSequenceCounter++;
+      }
+      break;
+    }
+    case 21:
+    {
+      Serial.println( "TV navigating to youtube finished" );
+      mSequenceCounter++;
+      break;
+    }
+    case 22:
+    {
+      Serial.println( "TV Joystick pressing on Youtube icon" );
+      mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), 38 );
+      delay( 100 );
+      mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), 38 );
+      mSequenceCounter++;
+      break;
+    }
+    case 23:
+    {
+      Serial.println( "TV Youtube shoulbe launched" );
+      mSequenceCounter++;
+      break;
+    }
+    case 24:
+    {
+      mSequenceCounter = 0;
+    }
   }
-
-  Serial.println( "TV Smart launching button down" );
-  mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), 38 );
-  delay( 100 );
-  Serial.println( "TV Smart launching button up" );
-  mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), 38 );
-
-  Serial.println( "TV Wait after smart was launched" );
-  for( int i = 0 ; i < 30 ; i++ )
-  {
-    delay( 1 * 1000 );
-  }
-
-  Serial.println( "TV navigating to youtube begin" );
-  for( int i = 0 ; i < 4 ; i++ )
-  {
-    Serial.println( "TV navigating down" );
-    mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), 38 );
-    delay( 100 );
-    mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), 38 );
-    delay( 1000 );
-  }
-
-  for( int i = 0 ; i < 3 ; i++ )
-  {
-    Serial.println( "TV navigating right" );
-    mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), 38 );
-    delay( 100 );
-    mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), 38 );
-    delay( 1 * 1000 );
-  }
-  Serial.println( "TV navigating to youtube finished" );
-
-  Serial.println( "TV Joystick pressing on Youtube icon" );
-  mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), 38 );
-  delay( 100 );
-  mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), 38 );
-
-  Serial.println( "TV Youtube shoulbe launched" );
 }

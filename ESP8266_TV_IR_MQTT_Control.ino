@@ -9,13 +9,14 @@
 #include "IRTVControlTask.h"
 #include "NetworkingTask.h"
 #include "ClientTask.h"
-
+#include <inttypes.h>
 
 Scheduler taskRunnerAsync;
 
 IRTVControlTask IRTVControl;
 NetworkingTask Networking;
 ClientTask pubSubClient( Networking.getPubSubClient() );
+const int32_t controlTaskIterations = 92;// depends on IRTVControlTask::mLoopCounter
 Task controlTask( 0, 0, IRTVControl );
 Task netTask( 0, TASK_FOREVER, Networking );
 Task pubSubClientTask( 0, TASK_FOREVER, pubSubClient );
@@ -48,7 +49,8 @@ void handleIRTopic()
 {
   Serial.println( "Catch signal to start youtube on Hitachi TV" );
   Serial.println( "Add new task" );
-  controlTask.setIterations( controlTask.getIterations() + 1 );
+  IRTVControl.resetSequence();
+  controlTask.setIterations( controlTask.getIterations() + controlTaskIterations );
   taskRunnerAsync.addTask( controlTask );
   Serial.println( "Enable new task" );
   controlTask.enable();
