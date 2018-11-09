@@ -4,9 +4,10 @@ class ClientTask
 {
 public:
   ClientTask( PubSubClient & client );
-
-  void operator()();
-
+  void loopFunc();
+  void setPubSubClient( PubSubClient & client );
+  std::function<void()> getLoop();
+private:
   PubSubClient & mClient;
 };
 

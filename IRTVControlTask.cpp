@@ -17,8 +17,13 @@ uint16_t rawDataJoystickEnterButtonUp[21] = {950, 830,  1828, 838,  936, 834,  9
 
 #define SIZEOF( ARRAY ) ( sizeof( ARRAY ) / sizeof( ARRAY[0] ) )
 
-IRTVControlTask::IRTVControlTask() : mIrLed( 4 ), mIrSend( mIrLed ), mSequenceCounter( 0 ), mLoopCounter( 0 )
+IRTVControlTask::IRTVControlTask():
+       mIrLed( 4 ), mIrSend( mIrLed ), mSequenceCounter( 0 ), 
+       mLoopCounter( 0 ), mIRFrequency( 38 * 1000 ), mLoopsOnYoutubeFromTVScratchCount( 92 ),
+       mLoopsOnYoutubeFromTVInitialCount( 1 )
 {
+  
+  mHandler = std::bind( &IRTVControlTask::emptyHandler, this );
 }
 
 void IRTVControlTask::init()
@@ -33,10 +38,42 @@ void IRTVControlTask::resetSequence()
 
 void IRTVControlTask::operator()()
 {
+  mHandler();
+}
+
+void IRTVControlTask::emptyHandler()
+{
+  Serial.print( __FUNCTION__ );Serial.println( " was called" );
+}
+
+void IRTVControlTask::setYoutubeFromTVScratchHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleYoutubeFromTVScratch, this );
+}
+
+void IRTVControlTask::setYoutubeFromTVInitialHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleYoutubeFromTVInitial, this );
+}
+
+void IRTVControlTask::handleYoutubeFromTVInitial()
+{
+//  Serial.print( __FUNCTION__ );Serial.println( " was called" );
+//  Serial.print( __FUNCTION__ );Serial.println( " leave" );
+}
+
+int32_t IRTVControlTask::getLoopsOnYoutubeFromInitialCount()
+{
+  return mLoopsOnYoutubeFromTVInitialCount;
+}
+
+void IRTVControlTask::handleYoutubeFromTVScratch()
+{
+//  Serial.printf( "%s was called: this=%p\n", __FUNCTION__, this );
 //  Serial.print( "mSequenceCounter=" );Serial.println( mSequenceCounter );
   const int minDelay = 1000;
   mLoopCounter++;
-  Serial.print( "mLoopCounter=" );Serial.println( mLoopCounter );
+//  Serial.print( "mLoopCounter=" );Serial.println( mLoopCounter );
   switch( mSequenceCounter )
   {
     case 0:
@@ -55,6 +92,7 @@ void IRTVControlTask::operator()()
     {
       Serial.println( "TV Wait after TV was powered-on" );
       mSequenceCounter++;
+      mDelayTimeSum = 0;
       break;
     }
     case 2:
@@ -85,6 +123,7 @@ void IRTVControlTask::operator()()
     {
       Serial.println( "TV Wait after smart was launched" );
       mSequenceCounter++;
+      mDelayTimeSum = 0;
       break;
     }
     case 5:
@@ -141,6 +180,7 @@ void IRTVControlTask::operator()()
       delay( 100 );
       mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), 38 );
       mSequenceCounter++;
+      mDelayTimeSum = 0;
       break;
     }
     case 16:
@@ -183,3 +223,9 @@ void IRTVControlTask::operator()()
     }
   }
 }
+
+int32_t IRTVControlTask::getLoopsOnYoutubeFromScratchCount()
+{
+  return mLoopsOnYoutubeFromTVScratchCount;
+}
+

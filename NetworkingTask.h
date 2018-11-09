@@ -9,13 +9,14 @@ public:
   NetworkingTask();
 
   void operator()();
+  std::function<void()> getLoop();
   void addListener( const std::string & topic, const std::function<void()> & callback );
   void init();
   PubSubClient& getPubSubClient();
-//  void operator()( char* topic, unsigned char* payload, unsigned int length );
   static void callbackTopic( char* topic, unsigned char* payload, unsigned int length );
   
 private:
+  void loopFunc();
   bool connectWiFi();
   void reconnectMQTT();
   void publishPingMQTT();

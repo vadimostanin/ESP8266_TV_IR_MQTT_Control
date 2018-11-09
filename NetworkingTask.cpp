@@ -27,17 +27,25 @@ PubSubClient & NetworkingTask::getPubSubClient()
   return mClient;
 }
 
-void NetworkingTask::operator()()
+void NetworkingTask::loopFunc()
 {
   if( !mClient.connected() )
   {
     reconnectMQTT();
   }
-//  mClient.loop();
 
-  publishPingMQTT();
+  if( mClient.connected() )
+  {
+    publishPingMQTT();
+  }
 
   delay( 200 );
+};
+  
+std::function<void()> NetworkingTask::getLoop()
+{
+  auto func = [this](){ loopFunc(); };
+  return std::bind( func );
 }
 
 bool NetworkingTask::connectWiFi()
@@ -65,7 +73,6 @@ bool NetworkingTask::connectWiFi()
   return result;
 }
 
-//void NetworkingTask::operator()(char* topic, unsigned char* payload, unsigned int length)
 void NetworkingTask::callbackTopic(char* topic, unsigned char* payload, unsigned int length)
 {
   Serial.print( "Message arrived [" );
@@ -109,8 +116,9 @@ void NetworkingTask::publishPingMQTT()
 
 void NetworkingTask::reconnectMQTT()
 {
+  Serial.print( "NetworkingTask mClient.connected()=" );Serial.println( mClient.connected() );
   // Loop until we're reconnected
-  while( !mClient.connected() )
+  if( !mClient.connected() )
   {
     Serial.print( "Attempting MQTT connection..." );
     // Attempt to connect

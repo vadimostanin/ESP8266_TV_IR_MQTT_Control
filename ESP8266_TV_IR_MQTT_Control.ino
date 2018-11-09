@@ -17,9 +17,9 @@ IRTVControlTask IRTVControl;
 NetworkingTask Networking;
 ClientTask pubSubClient( Networking.getPubSubClient() );
 const int32_t controlTaskIterations = 92;// depends on IRTVControlTask::mLoopCounter
-Task controlTask( 0, 0, IRTVControl );
-Task netTask( 0, TASK_FOREVER, Networking );
-Task pubSubClientTask( 0, TASK_FOREVER, pubSubClient );
+Task controlTask( 0, 0, NULL );
+Task netTask( 0, 0, NULL );
+Task pubSubClientTask( 0, 0, NULL );
 
 std::string mqtt_topic_tv_hitach_youtube_on = "tv_hitachi_youtube_on";
 
@@ -36,21 +36,30 @@ void setup()
   Serial.println();
   Networking.init();
   IRTVControl.init();
-  Networking.addListener( mqtt_topic_tv_hitach_youtube_on, handleIRTopic );
+  Networking.addListener( mqtt_topic_tv_hitach_youtube_on, handleIRTopicYoutubeFromScratch );
   taskRunnerAsync.init();
+  
+  netTask.set( 0, TASK_FOREVER, Networking.getLoop() );
+//  pubSubClient.setPubSubClient( Networking.getPubSubClient() );
+  pubSubClientTask.set( 0, TASK_FOREVER, pubSubClient.getLoop() );
+  
   taskRunnerAsync.addTask( netTask );
   taskRunnerAsync.addTask( pubSubClientTask );
+  
   netTask.enable();
   pubSubClientTask.enable();
+  
   Serial.println( "setup leave" );
 }
 
-void handleIRTopic()
+void handleIRTopicYoutubeFromScratch()
 {
   Serial.println( "Catch signal to start youtube on Hitachi TV" );
   Serial.println( "Add new task" );
   IRTVControl.resetSequence();
-  controlTask.setIterations( controlTask.getIterations() + controlTaskIterations );
+  IRTVControl.setYoutubeFromTVScratchHandler();
+  Serial.printf( "%s: controlTask.getIterations()=%d\n", __FUNCTION__, controlTask.getIterations() );
+  controlTask.set( 0, IRTVControl.getLoopsOnYoutubeFromScratchCount(), IRTVControl );
   taskRunnerAsync.addTask( controlTask );
   Serial.println( "Enable new task" );
   controlTask.enable();

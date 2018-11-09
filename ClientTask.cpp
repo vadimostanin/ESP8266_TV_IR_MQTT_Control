@@ -5,10 +5,20 @@ ClientTask::ClientTask( PubSubClient & client ) : mClient( client )
   ;
 }
 
-void ClientTask::operator()()
+void ClientTask::loopFunc()
 {
-  Serial.print( "mClient.connected()=" );Serial.println( mClient.connected() );
+  Serial.print( "ClientTask mClient.connected()=" );Serial.println( mClient.connected() );
   mClient.loop();
   delay( 100 );
 }
 
+void ClientTask::setPubSubClient( PubSubClient & client )
+{
+  mClient = client;
+}
+
+std::function<void()> ClientTask::getLoop()
+{
+  auto func = [this](){ loopFunc(); };
+  return std::bind( func );
+}
