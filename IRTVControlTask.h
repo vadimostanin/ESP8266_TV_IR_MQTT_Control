@@ -15,13 +15,35 @@ public:
 
   void operator()();
 
-  void handleTopic();
   void resetSequence();
+  void setMuteHandler();
+  void setExitHandler();
+  void setBackHandler();
+  void setJoystickDownHandler();
+  void setJoystickRightHandler();
+  void setJoystickUpHandler();
+  void setJoystickLeftHandler();
+  void setJoystickEnterHandler();
+  void setPowerHandler();
+  void setSmartHandler();
   void setYoutubeFromTVScratchHandler();
   void setYoutubeFromTVInitialHandler();
+  void setSamsungPowerHandler();
   int32_t getLoopsOnYoutubeFromScratchCount();
   int32_t getLoopsOnYoutubeFromInitialCount();
+  int32_t getLoopsOneCommandCount();
 private:
+  void handleMute();
+  void handleExit();
+  void handleBack();
+  void handleJoystickDown();
+  void handleJoystickRight();
+  void handleJoystickUp();
+  void handleJoystickLeft();
+  void handleJoystickEnter();
+  void handlePower();
+  void handleSmart();
+  void handleTVSamsungPower();
   void handleYoutubeFromTVScratch();
   void handleYoutubeFromTVInitial();
   void emptyHandler();

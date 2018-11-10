@@ -15,6 +15,23 @@ uint16_t rawDataJoystickRightButtonUp[19] = {946, 828,  950, 826,  1840, 824,  9
 uint16_t rawDataJoystickEnterButtonDown[21] = {940, 836,  1830, 832,  942, 834,  938, 832,  944, 1702,  936, 838,  942, 834,  938, 840,  1828, 1704,  1828, 1710,  942};  // RC5 F5
 uint16_t rawDataJoystickEnterButtonUp[21] = {950, 830,  1828, 838,  936, 834,  940, 828,  944, 1700,  942, 834,  940, 836,  942, 834,  1832, 1706,  1830, 1704,  942};  // RC5 F5
 
+uint16_t rawDataJoystickUpButtonDown[19] = {976, 800,  950, 826,  1856, 808,  964, 808,  948, 1694,  966, 810,  1858, 1676,  1818, 1720,  1818, 848,  966};  // RC5 8D4
+uint16_t rawDataJoystickUpButtonUp[19] = {976, 802,  974, 804,  1864, 800,  974, 796,  950, 1694,  976, 800,  1864, 1672,  1866, 1670,  1866, 800,  974};  // RC5 8D4
+
+uint16_t rawDataJoystickLeftButtonDown[19] = {938, 842,  932, 842,  1824, 840,  934, 836,  934, 1708,  936, 842,  1824, 1708,  1826, 1708,  1828, 1712,  936};  // RC5 8D5
+uint16_t rawDataJoystickLeftButtonUp[19] = {936, 844,  932, 842,  1824, 840,  960, 814,  932, 1706,  938, 842,  1822, 1710,  1828, 1710,  1852, 1686,  936};  // RC5 8D5
+
+uint16_t rawDataBackButtonDown[19] = {936, 840,  936, 840,  1826, 838,  936, 836,  936, 1708,  936, 842,  1826, 838,  936, 1708,  1826, 1710,  1828};  // RC5 8CA
+uint16_t rawDataBackButtonUp[19] = {936, 842,  936, 842,  1824, 838,  936, 836,  936, 1708,  936, 840,  1826, 838,  934, 1708,  1826, 1710,  1826};  // RC5 8CA
+
+uint16_t rawDataExitButtonDown[21] = {964, 818,  1822, 842,  958, 814,  932, 840,  930, 1708,  936, 842,  934, 846,  1846, 814,  934, 1706,  1826, 1712,  936};  // RC5 E5
+uint16_t rawDataExitButtonUp[21] = {936, 846,  1820, 840,  932, 844,  952, 816,  930, 1708,  962, 820,  932, 846,  1846, 816,  930, 1708,  1854, 1686,  936};  // RC5 E5
+
+uint16_t rawDataMuteButtonDown[21] = {936, 842,  934, 844,  1824, 840,  934, 838,  934, 1708,  936, 842,  1826, 840,  932, 1708,  936, 842,  1824, 1714,  936};  // RC5 8CD
+uint16_t rawDataMuteButtonUp[21] = {936, 842,  934, 842,  1824, 840,  934, 840,  928, 1710,  936, 842,  1824, 840,  932, 1708,  960, 818,  1824, 1712,  936};  // RC5 8CD
+
+uint16_t rawDataSamsungPowerOn[135] = {4536, 4440,  620, 1638,  618, 1638,  618, 1638,  618, 510,  618, 510,  616, 512,  616, 510,  618, 510,  618, 1638,  620, 1638,  618, 1638,  618, 510,  618, 512,  616, 510,  616, 510,  618, 510,  616, 510,  618, 1638,  618, 1638,  618, 510,  618, 510,  618, 1638,  618, 1638,  618, 1638,  620, 1638,  618, 510,  616, 510,  616, 1640,  618, 1638,  618, 510,  616, 512,  616, 512,  618, 45958,  4530, 4448,  618, 1640,  618, 1638,  618, 1638,  620, 510,  616, 512,  616, 510,  616, 510,  618, 510,  618, 1638,  618, 1638,  618, 1638,  618, 510,  618, 510,  618, 510,  618, 510,  618, 510,  616, 510,  618, 1638,  618, 1638,  618, 510,  618, 510,  618, 1638,  618, 1640,  618, 1638,  618, 1638,  618, 510,  618, 512,  616, 1638,  618, 1638,  620, 510,  624, 504,  618, 510,  618};  // SAMSUNG E0E06798
+
 #define SIZEOF( ARRAY ) ( sizeof( ARRAY ) / sizeof( ARRAY[0] ) )
 
 IRTVControlTask::IRTVControlTask():
@@ -56,6 +73,17 @@ void IRTVControlTask::setYoutubeFromTVInitialHandler()
   mHandler = std::bind( &IRTVControlTask::handleYoutubeFromTVInitial, this );
 }
 
+void IRTVControlTask::setSamsungPowerHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleTVSamsungPower, this );
+}
+
+void IRTVControlTask::handleTVSamsungPower()
+{
+  Serial.println( "TV Samsung Power On" );
+  mIrSend.sendRaw( rawDataSamsungPowerOn, SIZEOF( rawDataSamsungPowerOn ), 38 );
+}
+
 void IRTVControlTask::handleYoutubeFromTVInitial()
 {
 //  Serial.print( __FUNCTION__ );Serial.println( " was called" );
@@ -65,6 +93,142 @@ void IRTVControlTask::handleYoutubeFromTVInitial()
 int32_t IRTVControlTask::getLoopsOnYoutubeFromInitialCount()
 {
   return mLoopsOnYoutubeFromTVInitialCount;
+}
+
+void IRTVControlTask::setMuteHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleMute, this );
+}
+
+void IRTVControlTask::setExitHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleExit, this );
+}
+
+void IRTVControlTask::setBackHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleBack, this );
+}
+
+void IRTVControlTask::setJoystickDownHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleJoystickDown, this );
+}
+
+void IRTVControlTask::setJoystickRightHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleJoystickRight, this );
+}
+
+void IRTVControlTask::setJoystickUpHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleJoystickUp, this );
+}
+
+void IRTVControlTask::setJoystickLeftHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleJoystickLeft, this );
+}
+
+void IRTVControlTask::setJoystickEnterHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleJoystickEnter, this );
+}
+
+void IRTVControlTask::setPowerHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handlePower, this );
+}
+
+void IRTVControlTask::setSmartHandler()
+{
+  mHandler = std::bind( &IRTVControlTask::handleSmart, this );
+}
+
+void IRTVControlTask::handleMute()
+{
+  Serial.println( "TV Mute button down" );
+  mIrSend.sendRaw( rawDataMuteButtonDown, SIZEOF( rawDataMuteButtonDown ), 38 );
+  delay( 100 );
+  Serial.println( "TV Mute button up" );
+  mIrSend.sendRaw( rawDataMuteButtonUp, SIZEOF( rawDataMuteButtonUp ), 38 );
+}
+
+void IRTVControlTask::handleExit()
+{
+  Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataExitButtonDown, SIZEOF( rawDataExitButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataExitButtonUp, SIZEOF( rawDataExitButtonUp ), 38 );
+}
+
+void IRTVControlTask::handleBack()
+{
+    Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataBackButtonDown, SIZEOF( rawDataBackButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataBackButtonUp, SIZEOF( rawDataBackButtonUp ), 38 );
+}
+
+void IRTVControlTask::handleJoystickDown()
+{
+    Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), 38 );
+}
+
+void IRTVControlTask::handleJoystickRight()
+{
+    Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), 38 );
+}
+
+void IRTVControlTask::handleJoystickUp()
+{
+    Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataJoystickUpButtonDown, SIZEOF( rawDataJoystickUpButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataJoystickUpButtonUp, SIZEOF( rawDataJoystickUpButtonUp ), 38 );
+}
+
+void IRTVControlTask::handleJoystickLeft()
+{
+    Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataJoystickLeftButtonDown, SIZEOF( rawDataJoystickLeftButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataJoystickLeftButtonUp, SIZEOF( rawDataJoystickLeftButtonUp ), 38 );
+}
+
+void IRTVControlTask::handleJoystickEnter()
+{
+    Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), 38 );
+}
+
+void IRTVControlTask::handlePower()
+{
+    Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataPowerOnButtonDown, SIZEOF( rawDataPowerOnButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataPowerOnButtonUp, SIZEOF( rawDataPowerOnButtonUp ), 38 );
+}
+
+void IRTVControlTask::handleSmart()
+{
+    Serial.println( "TV Exit button down" );
+  mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), 38 );
+  delay( 100 );
+  mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), 38 );
+}
+
+int32_t IRTVControlTask::getLoopsOneCommandCount()
+{
+  return 1;
 }
 
 void IRTVControlTask::handleYoutubeFromTVScratch()

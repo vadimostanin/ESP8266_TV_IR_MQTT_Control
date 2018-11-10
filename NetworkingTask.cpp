@@ -131,6 +131,7 @@ void NetworkingTask::reconnectMQTT()
       {
         Serial.print( "Subscribing to " );Serial.println( topic.first.c_str() );
         mClient.subscribe( topic.first.c_str() );
+        mClient.loop();
       }
     }
     else
@@ -150,5 +151,15 @@ void NetworkingTask::addListener( const std::string & topic, const std::function
   Serial.println( topic.c_str() );
   mClient.subscribe( topic.c_str() );
   mListeners[topic] = callback;
+}
+
+void NetworkingTask::subscribe( std::string topic, std::function<void()> callback )
+{
+  ;
+}
+
+void NetworkingTask::publish( std::string topic, std::string message )
+{
+  ;
 }
 

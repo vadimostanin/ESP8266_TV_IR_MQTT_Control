@@ -1,9 +1,10 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include "ISubPub.h"
 
 #include <map>
-class NetworkingTask
+class NetworkingTask : public IPubSub
 {
 public:
   NetworkingTask();
@@ -16,6 +17,8 @@ public:
   static void callbackTopic( char* topic, unsigned char* payload, unsigned int length );
   
 private:
+  void subscribe( std::string topic, std::function<void()> callback ) override;
+  void publish( std::string topic, std::string message ) override;
   void loopFunc();
   bool connectWiFi();
   void reconnectMQTT();
