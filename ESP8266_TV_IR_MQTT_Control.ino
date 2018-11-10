@@ -45,22 +45,23 @@ void setup()
   Serial.println( "setup enter" );
   Networking.init();
   IRTVControl.init();
-  Networking.addListener( mqtt_topic_tv_hitach_youtube_on, handleIRTopicYoutubeFromScratch );
-  Networking.addListener( mqtt_topic_tv_hitach_mute, handleIRTopicMute );
-  Networking.addListener( mqtt_topic_tv_hitach_back, handleIRTopicBack );
-  Networking.addListener( mqtt_topic_tv_hitach_power, handleIRTopicPower );
-  Networking.addListener( mqtt_topic_tv_hitach_joystick_down, handleIRTopicJoystickDown );
-  Networking.addListener( mqtt_topic_tv_hitach_joystick_up, handleIRTopicJoystickUp );
-  Networking.addListener( mqtt_topic_tv_hitach_joystick_right, handleIRTopicJoystickRight );
-  Networking.addListener( mqtt_topic_tv_hitach_joystick_left, handleIRTopicJoystickLeft );
-  Networking.addListener( mqtt_topic_tv_hitach_joystick_enter, handleIRTopicJoystickEnter );
-  Networking.addListener( mqtt_topic_tv_hitach_smart, handleIRTopicSmart );
-  Networking.addListener( mqtt_topic_tv_hitach_exit, handleIRTopicExit );
-  Networking.addListener( mqtt_topic_tv_samsung_power, handleIRTopicSamsungPower );
+  ISubPub & iNet = Networking;
+  IRTVControl.setINet( &iNet );
+  iNet.subscribe( mqtt_topic_tv_hitach_youtube_on, handleIRTopicYoutubeFromScratch );
+  iNet.subscribe( mqtt_topic_tv_hitach_mute, handleIRTopicMute );
+  iNet.subscribe( mqtt_topic_tv_hitach_back, handleIRTopicBack );
+  iNet.subscribe( mqtt_topic_tv_hitach_power, handleIRTopicPower );
+  iNet.subscribe( mqtt_topic_tv_hitach_joystick_down, handleIRTopicJoystickDown );
+  iNet.subscribe( mqtt_topic_tv_hitach_joystick_up, handleIRTopicJoystickUp );
+  iNet.subscribe( mqtt_topic_tv_hitach_joystick_right, handleIRTopicJoystickRight );
+  iNet.subscribe( mqtt_topic_tv_hitach_joystick_left, handleIRTopicJoystickLeft );
+  iNet.subscribe( mqtt_topic_tv_hitach_joystick_enter, handleIRTopicJoystickEnter );
+  iNet.subscribe( mqtt_topic_tv_hitach_smart, handleIRTopicSmart );
+  iNet.subscribe( mqtt_topic_tv_hitach_exit, handleIRTopicExit );
+  iNet.subscribe( mqtt_topic_tv_samsung_power, handleIRTopicSamsungPower );
   taskRunnerAsync.init();
   
   netTask.set( 0, TASK_FOREVER, Networking.getLoop() );
-//  pubSubClient.setPubSubClient( Networking.getPubSubClient() );
   pubSubClientTask.set( 0, TASK_FOREVER, pubSubClient.getLoop() );
   
   taskRunnerAsync.addTask( netTask );

@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <functional>
+#include "ISubPub.h"
 
 class IRTVControlTask
 {
@@ -32,6 +33,8 @@ public:
   int32_t getLoopsOnYoutubeFromScratchCount();
   int32_t getLoopsOnYoutubeFromInitialCount();
   int32_t getLoopsOneCommandCount();
+
+  void setINet( ISubPub * iNet );
 private:
   void handleMute();
   void handleExit();
@@ -57,4 +60,6 @@ private:
   int32_t mLoopsOnYoutubeFromTVScratchCount;
   int32_t mLoopsOnYoutubeFromTVInitialCount;
   int32_t mIRFrequency;
+
+  ISubPub * mINet{nullptr};
 };

@@ -58,6 +58,11 @@ void IRTVControlTask::operator()()
   mHandler();
 }
 
+void IRTVControlTask::setINet( ISubPub * iNet )
+{
+  mINet = iNet;
+}
+
 void IRTVControlTask::emptyHandler()
 {
   Serial.print( __FUNCTION__ );Serial.println( " was called" );
@@ -82,6 +87,7 @@ void IRTVControlTask::handleTVSamsungPower()
 {
   Serial.println( "TV Samsung Power On" );
   mIrSend.sendRaw( rawDataSamsungPowerOn, SIZEOF( rawDataSamsungPowerOn ), 38 );
+  mINet->publish( "SamsungStatus", "Powered on" );
 }
 
 void IRTVControlTask::handleYoutubeFromTVInitial()
