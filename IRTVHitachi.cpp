@@ -32,31 +32,10 @@ uint16_t rawDataMuteButtonUp[21] = {936, 842,  934, 842,  1824, 840,  934, 840, 
 
 #define SIZEOF( ARRAY ) ( sizeof( ARRAY ) / sizeof( ARRAY[0] ) )
 
-IRTVHitachi::IRTVHitachi():
-       mIrLed( 4 ), mIrSend( mIrLed ), mSequenceCounter( 0 ), 
-       mLoopCounter( 0 ), mIRFrequency( 38 * 1000 ), mLoopsOnYoutubeFromTVScratchCount( 92 ),
+IRTVHitachi::IRTVHitachi(): IRTVBase( 4 ),
+       mLoopCounter( 0 ), mLoopsOnYoutubeFromTVScratchCount( 92 ),
        mLoopsOnYoutubeFromTVInitialCount( 89 ), mStatusTopic( "HitachiStatus" )
 {
-}
-
-void IRTVHitachi::init()
-{
-  mIrSend.begin();
-}
-
-void IRTVHitachi::resetSequence()
-{
-  mSequenceCounter = 0;
-}
-
-void IRTVHitachi::setINet( std::shared_ptr<ISubPub> iNet )
-{
-  mINet = iNet;
-}
-
-void IRTVHitachi::setChangableHandler( std::shared_ptr<std::function<void()>> handler )
-{
-  mHandler = handler;
 }
 
 void IRTVHitachi::prepareYoutubeFromTVScratchHandler()
@@ -139,91 +118,91 @@ void IRTVHitachi::prepareSmartHandler()
 void IRTVHitachi::handleMute()
 {
 //  Serial.println( "TV Mute button down" );
-  mIrSend.sendRaw( rawDataMuteButtonDown, SIZEOF( rawDataMuteButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataMuteButtonDown, SIZEOF( rawDataMuteButtonDown ), mIRFrequency );
   delay( 100 );
 //  Serial.println( "TV Mute button up" );
-  mIrSend.sendRaw( rawDataMuteButtonUp, SIZEOF( rawDataMuteButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataMuteButtonUp, SIZEOF( rawDataMuteButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV Mute pressed" );
 }
 
 void IRTVHitachi::handleExit()
 {
 //  Serial.println( "TV Exit button down" );
-  mIrSend.sendRaw( rawDataExitButtonDown, SIZEOF( rawDataExitButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataExitButtonDown, SIZEOF( rawDataExitButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataExitButtonUp, SIZEOF( rawDataExitButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataExitButtonUp, SIZEOF( rawDataExitButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV Exit pressed" );
 }
 
 void IRTVHitachi::handleBack()
 {
 //    Serial.println( "TV Back button down" );
-  mIrSend.sendRaw( rawDataBackButtonDown, SIZEOF( rawDataBackButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataBackButtonDown, SIZEOF( rawDataBackButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataBackButtonUp, SIZEOF( rawDataBackButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataBackButtonUp, SIZEOF( rawDataBackButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV Back pressed" );
 }
 
 void IRTVHitachi::handleJoystickDown()
 {
 //    Serial.println( "TV JoystickDown button down" );
-  mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV JoystickDown pressed" );
 }
 
 void IRTVHitachi::handleJoystickRight()
 {
 //    Serial.println( "TV JoystickRight button down" );
-  mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV JoystickRight button" );
 }
 
 void IRTVHitachi::handleJoystickUp()
 {
 //    Serial.println( "TV JoystickUp button down" );
-  mIrSend.sendRaw( rawDataJoystickUpButtonDown, SIZEOF( rawDataJoystickUpButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataJoystickUpButtonDown, SIZEOF( rawDataJoystickUpButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataJoystickUpButtonUp, SIZEOF( rawDataJoystickUpButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataJoystickUpButtonUp, SIZEOF( rawDataJoystickUpButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV JoystickUp button" );
 }
 
 void IRTVHitachi::handleJoystickLeft()
 {
 //    Serial.println( "TV JoystickLeft button down" );
-  mIrSend.sendRaw( rawDataJoystickLeftButtonDown, SIZEOF( rawDataJoystickLeftButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataJoystickLeftButtonDown, SIZEOF( rawDataJoystickLeftButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataJoystickLeftButtonUp, SIZEOF( rawDataJoystickLeftButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataJoystickLeftButtonUp, SIZEOF( rawDataJoystickLeftButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV JoystickLeft button" );
 }
 
 void IRTVHitachi::handleJoystickEnter()
 {
 //    Serial.println( "TV JoystickEnter button down" );
-  mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV JoystickEnter button" );
 }
 
 void IRTVHitachi::handlePower()
 {
 //    Serial.println( "TV Power button down" );
-  mIrSend.sendRaw( rawDataPowerOnButtonDown, SIZEOF( rawDataPowerOnButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataPowerOnButtonDown, SIZEOF( rawDataPowerOnButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataPowerOnButtonUp, SIZEOF( rawDataPowerOnButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataPowerOnButtonUp, SIZEOF( rawDataPowerOnButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV Power button" );
 }
 
 void IRTVHitachi::handleSmart()
 {
 //    Serial.println( "TV Smart button down" );
-  mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), 38 );
+  mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), mIRFrequency );
   delay( 100 );
-  mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), 38 );
+  mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), mIRFrequency );
   mINet->publish( mStatusTopic.c_str(), "TV Smart button" );
 }
 
@@ -243,10 +222,10 @@ void IRTVHitachi::handleYoutubeFromTVInitial()
     case 0:
     {  
 //      Serial.println( "TV Smart launching button down" );
-      mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), mIRFrequency );
       delay( 100 );
 //      Serial.println( "TV Smart launching button up" );
-      mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), 38 );
+      mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), mIRFrequency );
       mINet->publish( mStatusTopic.c_str(), "TV Smart pressed" );
 
       mSequenceCounter++;
@@ -255,7 +234,7 @@ void IRTVHitachi::handleYoutubeFromTVInitial()
     case 1:
     {
 //      Serial.println( "TV Wait after smart was launched" );
-      mINet->publish( mStatusTopic.c_str(), "TV Wait after smart was launched" );
+      mINet->publish( mStatusTopic.c_str(), "TV waits after smart was launched" );
       mSequenceCounter++;
       mDelayTimeSum = 0;
       break;
@@ -274,7 +253,7 @@ void IRTVHitachi::handleYoutubeFromTVInitial()
     case 3:
     {
 //      Serial.println( "TV navigating to youtube begin" );
-      mINet->publish( mStatusTopic.c_str(), "TV navigating to youtube begin" );
+      mINet->publish( mStatusTopic.c_str(), "TV is navigating to youtube begin" );
       mSequenceCounter++;
       break;
     }
@@ -284,10 +263,10 @@ void IRTVHitachi::handleYoutubeFromTVInitial()
     case 10:
     {
 //      Serial.println( "TV navigating down" );
-      mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), mIRFrequency );
       delay( 100 );
-      mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), 38 );
-      mINet->publish( mStatusTopic.c_str(), "TV navigating down" );
+      mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), mIRFrequency );
+      mINet->publish( mStatusTopic.c_str(), "TV is navigating down" );
       mSequenceCounter++;
       mDelayTimeSum = 0;
       break;
@@ -311,10 +290,10 @@ void IRTVHitachi::handleYoutubeFromTVInitial()
     case 16:
     {
 //      Serial.println( "TV navigating right" );
-      mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), mIRFrequency );
       delay( 100 );
-      mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), 38 );
-      mINet->publish( mStatusTopic.c_str(), "TV navigating right" );
+      mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), mIRFrequency );
+      mINet->publish( mStatusTopic.c_str(), "TV is navigating right" );
       mSequenceCounter++;
       mDelayTimeSum = 0;
       break;
@@ -335,16 +314,16 @@ void IRTVHitachi::handleYoutubeFromTVInitial()
     case 18:
     {
 //      Serial.println( "TV navigating to youtube finished" );
-      mINet->publish( mStatusTopic.c_str(), "TV navigating to youtube finished" );
+      mINet->publish( mStatusTopic.c_str(), "TV is navigating to youtube finished" );
       mSequenceCounter++;
       break;
     }
     case 19:
     {
 //      Serial.println( "TV Joystick pressing on Youtube icon" );
-      mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), mIRFrequency );
       delay( 100 );
-      mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), 38 );
+      mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), mIRFrequency );
       mINet->publish( mStatusTopic.c_str(), "TV Joystick pressing on Youtube icon" );
       mSequenceCounter++;
       break;
@@ -376,10 +355,10 @@ void IRTVHitachi::handleYoutubeFromTVScratch()
     case 0:
     {
 //      Serial.println( "TV Powering-on button down" );
-      mIrSend.sendRaw( rawDataPowerOnButtonDown, SIZEOF( rawDataPowerOnButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataPowerOnButtonDown, SIZEOF( rawDataPowerOnButtonDown ), mIRFrequency );
       delay( 100 );
 //      Serial.println( "TV Powering-on button up" );
-      mIrSend.sendRaw( rawDataPowerOnButtonUp, SIZEOF( rawDataPowerOnButtonUp ), 38 );
+      mIrSend.sendRaw( rawDataPowerOnButtonUp, SIZEOF( rawDataPowerOnButtonUp ), mIRFrequency );
       mINet->publish( mStatusTopic.c_str(), "TV Power pressed" );
 
       mSequenceCounter++;
@@ -410,10 +389,10 @@ void IRTVHitachi::handleYoutubeFromTVScratch()
     case 3:
     {  
 //      Serial.println( "TV Smart launching button down" );
-      mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataSmartButtonDown, SIZEOF( rawDataSmartButtonDown ), mIRFrequency );
       delay( 100 );
 //      Serial.println( "TV Smart launching button up" );
-      mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), 38 );
+      mIrSend.sendRaw( rawDataSmartButtonUp, SIZEOF( rawDataSmartButtonUp ), mIRFrequency );
       mINet->publish( mStatusTopic.c_str(), "TV Smart pressed" );
 
       mSequenceCounter++;
@@ -452,9 +431,9 @@ void IRTVHitachi::handleYoutubeFromTVScratch()
     case 13:
     {
 //      Serial.println( "TV navigating down" );
-      mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataJoystickDownButtonDown, SIZEOF( rawDataJoystickDownButtonDown ), mIRFrequency );
       delay( 100 );
-      mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), 38 );
+      mIrSend.sendRaw( rawDataJoystickDownButtonUp, SIZEOF( rawDataJoystickDownButtonUp ), mIRFrequency );
       mINet->publish( mStatusTopic.c_str(), "TV navigating down" );
       mSequenceCounter++;
       mDelayTimeSum = 0;
@@ -479,9 +458,9 @@ void IRTVHitachi::handleYoutubeFromTVScratch()
     case 19:
     {
 //      Serial.println( "TV navigating right" );
-      mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataJoystickRightButtonDown, SIZEOF( rawDataJoystickRightButtonDown ), mIRFrequency );
       delay( 100 );
-      mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), 38 );
+      mIrSend.sendRaw( rawDataJoystickRightButtonUp, SIZEOF( rawDataJoystickRightButtonUp ), mIRFrequency );
       mINet->publish( mStatusTopic.c_str(), "TV navigating right" );
       mSequenceCounter++;
       mDelayTimeSum = 0;
@@ -510,9 +489,9 @@ void IRTVHitachi::handleYoutubeFromTVScratch()
     case 22:
     {
 //      Serial.println( "TV Joystick pressing on Youtube icon" );
-      mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), 38 );
+      mIrSend.sendRaw( rawDataJoystickEnterButtonDown, SIZEOF( rawDataJoystickEnterButtonDown ), mIRFrequency );
       delay( 100 );
-      mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), 38 );
+      mIrSend.sendRaw( rawDataJoystickEnterButtonUp, SIZEOF( rawDataJoystickEnterButtonUp ), mIRFrequency );
       mINet->publish( mStatusTopic.c_str(), "TV Joystick pressing on Youtube icon" );
       mSequenceCounter++;
       break;

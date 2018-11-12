@@ -142,8 +142,11 @@ void handleIRTopicJoystickEnter()
 }
 void handleIRTopicSamsungPower()
 {
+  Serial.println( "handleIRTopicSamsungPower 1" );
   IRTVControl.getSamsung().prepareSamsungPowerHandler();
+  Serial.println( "handleIRTopicSamsungPower 2" );
   reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
+  Serial.println( "handleIRTopicSamsungPower 3" );
 }
 void loop()
 {
