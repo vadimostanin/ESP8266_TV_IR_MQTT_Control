@@ -14,13 +14,14 @@
 Scheduler taskRunnerAsync;
 
 IRTVControlTask IRTVControl;
-NetworkingTask Networking;
-ClientTask pubSubClient( Networking.getPubSubClient() );
+std::shared_ptr<NetworkingTask> Networking = std::make_shared<NetworkingTask>();
+ClientTask pubSubClient( Networking->getPubSubClient() );
 Task controlTask( 0, 0, NULL );
 Task netTask( 0, 0, NULL );
 Task pubSubClientTask( 0, 0, NULL );
 
 std::string mqtt_topic_tv_hitach_youtube_on = "tv_hitachi_youtube_on";
+std::string mqtt_topic_tv_hitach_youtube_initial_on = "tv_hitachi_youtube_initial_on";
 std::string mqtt_topic_tv_hitach_mute = "tv_hitachi_mute";
 std::string mqtt_topic_tv_hitach_back = "tv_hitachi_back";
 std::string mqtt_topic_tv_hitach_power = "tv_hitachi_power";
@@ -41,27 +42,27 @@ void setup()
   {
     delay( 100 );
   }
-  delay( 5000 );
   Serial.println( "setup enter" );
-  Networking.init();
+  Networking->init();
   IRTVControl.init();
-  ISubPub & iNet = Networking;
-  IRTVControl.setINet( &iNet );
-  iNet.subscribe( mqtt_topic_tv_hitach_youtube_on, handleIRTopicYoutubeFromScratch );
-  iNet.subscribe( mqtt_topic_tv_hitach_mute, handleIRTopicMute );
-  iNet.subscribe( mqtt_topic_tv_hitach_back, handleIRTopicBack );
-  iNet.subscribe( mqtt_topic_tv_hitach_power, handleIRTopicPower );
-  iNet.subscribe( mqtt_topic_tv_hitach_joystick_down, handleIRTopicJoystickDown );
-  iNet.subscribe( mqtt_topic_tv_hitach_joystick_up, handleIRTopicJoystickUp );
-  iNet.subscribe( mqtt_topic_tv_hitach_joystick_right, handleIRTopicJoystickRight );
-  iNet.subscribe( mqtt_topic_tv_hitach_joystick_left, handleIRTopicJoystickLeft );
-  iNet.subscribe( mqtt_topic_tv_hitach_joystick_enter, handleIRTopicJoystickEnter );
-  iNet.subscribe( mqtt_topic_tv_hitach_smart, handleIRTopicSmart );
-  iNet.subscribe( mqtt_topic_tv_hitach_exit, handleIRTopicExit );
-  iNet.subscribe( mqtt_topic_tv_samsung_power, handleIRTopicSamsungPower );
+  std::shared_ptr<ISubPub> iNet = Networking;
+  IRTVControl.setINet( iNet );
+  iNet->subscribe( mqtt_topic_tv_hitach_youtube_on, handleIRTopicYoutubeFromScratch );
+  iNet->subscribe( mqtt_topic_tv_hitach_youtube_initial_on, handleIRTopicYoutubeFromScratch );
+  iNet->subscribe( mqtt_topic_tv_hitach_mute, handleIRTopicMute );
+  iNet->subscribe( mqtt_topic_tv_hitach_back, handleIRTopicBack );
+  iNet->subscribe( mqtt_topic_tv_hitach_power, handleIRTopicPower );
+  iNet->subscribe( mqtt_topic_tv_hitach_joystick_down, handleIRTopicJoystickDown );
+  iNet->subscribe( mqtt_topic_tv_hitach_joystick_up, handleIRTopicJoystickUp );
+  iNet->subscribe( mqtt_topic_tv_hitach_joystick_right, handleIRTopicJoystickRight );
+  iNet->subscribe( mqtt_topic_tv_hitach_joystick_left, handleIRTopicJoystickLeft );
+  iNet->subscribe( mqtt_topic_tv_hitach_joystick_enter, handleIRTopicJoystickEnter );
+  iNet->subscribe( mqtt_topic_tv_hitach_smart, handleIRTopicSmart );
+  iNet->subscribe( mqtt_topic_tv_hitach_exit, handleIRTopicExit );
+  iNet->subscribe( mqtt_topic_tv_samsung_power, handleIRTopicSamsungPower );
   taskRunnerAsync.init();
   
-  netTask.set( 0, TASK_FOREVER, Networking.getLoop() );
+  netTask.set( 0, TASK_FOREVER, Networking->getLoop() );
   pubSubClientTask.set( 0, TASK_FOREVER, pubSubClient.getLoop() );
   
   taskRunnerAsync.addTask( netTask );
@@ -73,118 +74,79 @@ void setup()
   Serial.println( "setup leave" );
 }
 
+void reRunIRTask( int iterations )
+{
+  controlTask.set( 0, iterations, IRTVControl.getLoop() );
+  taskRunnerAsync.addTask( controlTask );
+  controlTask.enable();
+}
 void handleIRTopicYoutubeFromScratch()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setYoutubeFromTVScratchHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOnYoutubeFromScratchCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareYoutubeFromTVScratchHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOnYoutubeFromScratchCount() );
 }
-
+void handleIRTopicYoutubeFromInitial()
+{
+  IRTVControl.getHitachi().prepareYoutubeFromTVInitialHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOnYoutubeFromScratchCount() );
+}
 void handleIRTopicMute()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setMuteHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareMuteHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicBack()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setBackHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareBackHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicExit()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setExitHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareExitHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicPower()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setPowerHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().preparePowerHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicSmart()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setSmartHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareSmartHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicJoystickDown()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setJoystickDownHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareJoystickDownHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicJoystickUp()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setJoystickUpHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareJoystickUpHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicJoystickRight()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setJoystickRightHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareJoystickRightHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicJoystickLeft()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setJoystickLeftHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareJoystickLeftHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicJoystickEnter()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setJoystickEnterHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getHitachi().prepareJoystickEnterHandler();
+  reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
 }
-
 void handleIRTopicSamsungPower()
 {
-  IRTVControl.resetSequence();
-  IRTVControl.setSamsungPowerHandler();
-  controlTask.set( 0, IRTVControl.getLoopsOneCommandCount(), IRTVControl );
-  taskRunnerAsync.addTask( controlTask );
-  controlTask.enable();
+  IRTVControl.getSamsung().prepareSamsungPowerHandler();
+  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
 }
-
 void loop()
 {
-//  Serial.print( "loop" );
   taskRunnerAsync.execute();
-//  delay( 100 );
 }
 

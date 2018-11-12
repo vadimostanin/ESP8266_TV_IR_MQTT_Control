@@ -136,9 +136,9 @@ void NetworkingTask::reconnectMQTT()
     }
     else
     {
-      Serial.print( "failed, rc=" );
-      Serial.print( mClient.state() );
-      Serial.println(" try again in 5 seconds");
+//      Serial.print( "failed, rc=" );
+//      Serial.print( mClient.state() );
+//      Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
       delay( 5000 );
     }
@@ -147,10 +147,26 @@ void NetworkingTask::reconnectMQTT()
 
 void NetworkingTask::subscribe( const std::string & topic, const std::function<void()> & callback )
 {
-  Serial.print( "addListener topic.c_str()=" );
-  Serial.println( topic.c_str() );
-  mClient.subscribe( topic.c_str() );
-  mListeners[topic] = callback;
+  Serial.print( "add topic.c_str()=" );
+  Serial.print( topic.c_str() );
+  Serial.println( " to queue" );
+  auto foundListenerIter = mListeners.find( topic );
+  if( foundListenerIter == std::end( mListeners ) )
+  {
+    mListeners[topic] = callback;
+    if( mClient.connected() )
+    {
+//      Serial.print( "mqtt server is connected, subscribe topic.c_str()=" );
+//      Serial.println( topic.c_str() );
+      mClient.subscribe( topic.c_str() );
+    }
+  }
+  else
+  {
+//    Serial.print( "Topic \"" );
+//    Serial.print( topic.c_str() );
+//    Serial.println( "\" was subscribed already." );
+  }
 }
 
 void NetworkingTask::publish( const std::string & topic, const std::string & message )

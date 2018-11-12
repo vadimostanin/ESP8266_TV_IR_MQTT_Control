@@ -9,7 +9,6 @@ class NetworkingTask : public ISubPub
 public:
   NetworkingTask();
 
-  void operator()();
   std::function<void()> getLoop();
   void init();
   PubSubClient& getPubSubClient();
