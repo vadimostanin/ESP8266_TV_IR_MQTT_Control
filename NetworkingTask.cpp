@@ -1,4 +1,5 @@
 #include "NetworkingTask.h"
+#include <functional> // for bind() 
 
 const char *ssid = "laptop"; // Имя вайфай точки доступа
 const char *pass = "q1w2e3r4"; // Пароль от точки доступа
@@ -9,7 +10,11 @@ const int mqtt_port = 13969; // Порт для подключения к сер
 const char *mqtt_user = "xtdtvxau"; // Логи от сервер
 const char *mqtt_pass = "C0f1bz0V2Zrz"; // Пароль от сервера
 
-std::map<std::string, std::function<void()>> mListeners;
+namespace
+{
+  std::map<std::string, std::function<void()>> mConcreteTopicListeners;
+  std::vector<std::function<void(std::string)>> mAnyTopicListeners;
+}
 
 NetworkingTask::NetworkingTask() : mClient( mqtt_server, mqtt_port, wclient )
 {
@@ -18,9 +23,7 @@ NetworkingTask::NetworkingTask() : mClient( mqtt_server, mqtt_port, wclient )
 void NetworkingTask::init()
 {
   connectWiFi();
-//  mClient.setCallback( std::bind( &NetworkingTask::callbackMQTT, this ) );
-//  mClient.setCallback( *this );
-  mClient.setCallback( callbackTopic );
+  mClient.setCallback( std::bind( &NetworkingTask::callbackTopic, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 ) );
 }
 PubSubClient & NetworkingTask::getPubSubClient()
 {
@@ -83,8 +86,8 @@ void NetworkingTask::callbackTopic(char* topic, unsigned char* payload, unsigned
     Serial.print( ( char ) payload[i] );
   }
   Serial.println();
-  auto foundListenerIter = mListeners.find( topic );
-  if( foundListenerIter != std::end( mListeners ) )
+  const auto foundListenerIter = mConcreteTopicListeners.find( topic );
+  if( foundListenerIter != std::end( mConcreteTopicListeners ) )
   {
     foundListenerIter->second();
   }
@@ -92,11 +95,15 @@ void NetworkingTask::callbackTopic(char* topic, unsigned char* payload, unsigned
   {
     Serial.print( "Topic \""); Serial.print( topic ); Serial.println( "\" not found" );
   }
+  for( const auto anyTopicListener : mAnyTopicListeners )
+  {
+    anyTopicListener( topic );
+  }
 }
 
 void NetworkingTask::publishPingMQTT()
 {
-  long now = millis();
+  const long now = millis();
   static long lastMsg = now;
   if( ( now - lastMsg ) > 5000 )
   {
@@ -127,7 +134,7 @@ void NetworkingTask::reconnectMQTT()
       Serial.println( "connected" );
       // ... and resubscribe
       mClient.subscribe( "inTopic" );
-      for( auto & topic : mListeners )
+      for( auto & topic : mConcreteTopicListeners )
       {
         Serial.print( "Subscribing to " );Serial.println( topic.first.c_str() );
         mClient.subscribe( topic.first.c_str() );
@@ -150,10 +157,10 @@ void NetworkingTask::subscribe( const std::string & topic, const std::function<v
   Serial.print( "add topic.c_str()=" );
   Serial.print( topic.c_str() );
   Serial.println( " to queue" );
-  auto foundListenerIter = mListeners.find( topic );
-  if( foundListenerIter == std::end( mListeners ) )
+  auto foundListenerIter = mConcreteTopicListeners.find( topic );
+  if( foundListenerIter == std::end( mConcreteTopicListeners ) )
   {
-    mListeners[topic] = callback;
+    mConcreteTopicListeners[topic] = callback;
     if( mClient.connected() )
     {
 //      Serial.print( "mqtt server is connected, subscribe topic.c_str()=" );
@@ -167,6 +174,11 @@ void NetworkingTask::subscribe( const std::string & topic, const std::function<v
 //    Serial.print( topic.c_str() );
 //    Serial.println( "\" was subscribed already." );
   }
+}
+
+void NetworkingTask::subscribe( const std::function<void(std::string)> & callback )
+{
+  mAnyTopicListeners.push_back( callback );
 }
 
 void NetworkingTask::publish( const std::string & topic, const std::string & message )

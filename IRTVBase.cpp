@@ -18,7 +18,7 @@ void IRTVBase::resetSequence()
 
 void IRTVBase::setINet( std::shared_ptr<ISubPub> iNet )
 {
-  mINet = iNet;
+  mINet = std::move(iNet);
 }
 
 void IRTVBase::setChangableHandler( std::shared_ptr<std::function<void()>> handler )

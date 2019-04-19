@@ -20,6 +20,8 @@ public:
   int32_t getLoopsOnYoutubeFromScratchCount();
   int32_t getLoopsOnYoutubeFromInitialCount();
   int32_t getLoopsOneCommandCount();
+
+  bool process( std::string topic );
 private:
   void handleMute();
   void handleExit();

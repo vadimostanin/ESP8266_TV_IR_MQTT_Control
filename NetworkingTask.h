@@ -12,10 +12,11 @@ public:
   std::function<void()> getLoop();
   void init();
   PubSubClient& getPubSubClient();
-  static void callbackTopic( char* topic, unsigned char* payload, unsigned int length );
+  void callbackTopic( char* topic, unsigned char* payload, unsigned int length );
   
 private:
   void subscribe( const std::string & topic, const std::function<void()> & callback ) override;
+  void subscribe( const std::function<void(std::string)> & callback ) override;
   void publish( const std::string & topic, const std::string & message ) override;
   void loopFunc();
   bool connectWiFi();

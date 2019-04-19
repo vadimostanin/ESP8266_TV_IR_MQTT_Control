@@ -38,6 +38,12 @@ IRTVHitachi::IRTVHitachi(): IRTVBase( 4 ),
 {
 }
 
+bool IRTVHitachi::process( std::string topic )
+{
+  bool result = false;
+  return result;
+}
+
 void IRTVHitachi::prepareYoutubeFromTVScratchHandler()
 {
   resetSequence();

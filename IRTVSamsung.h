@@ -1,9 +1,16 @@
 #include "IRTVBase.h"
+#include <map>
 
 class IRTVSamsung : public IRTVBase
 {
 public:
   IRTVSamsung();
+
+  int32_t getLoopsOneCommandCount();
+  void subscribe();
+  bool process( std::string topic );
+private:
+
   void prepareSamsungPowerHandler();
   void prepareSamsungVolumeUpHandler();
   void prepareSamsungVolumeDownHandler();
@@ -17,10 +24,7 @@ public:
   void prepareSamsungJoystickEnterHandler();
   void prepareSamsungNumericalHandler();
   void prepareSamsungColorDotsHandler();
-
-  int32_t getLoopsOneCommandCount();
-private:
-
+  
   void handleTVSamsungPower();
   void handleTVSamsungVolumeUp();
   void handleTVSamsungVolumeDown();
@@ -36,5 +40,6 @@ private:
   void handleTVSamsungColorDots();
   
   std::string mStatusTopic;
+  std::map<std::string, std::function<void()>> mTopicListeners;
 };
 

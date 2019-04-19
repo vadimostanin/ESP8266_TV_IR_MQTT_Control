@@ -45,6 +45,7 @@ std::string mqtt_topic_tv_samsung_joystick_right = "tv_samsung_joystick_right";
 std::string mqtt_topic_tv_samsung_joystick_enter = "tv_samsung_joystick_enter";
 std::string mqtt_topic_tv_samsung_numerical = "tv_samsung_numerical";
 std::string mqtt_topic_tv_samsung_colordots = "tv_samsung_colordots";
+std::string mqtt_topic_any = "*";
 
 void setup()
 {
@@ -59,6 +60,7 @@ void setup()
   IRTVControl.init();
   std::shared_ptr<ISubPub> iNet = Networking;
   IRTVControl.setINet( iNet );
+  iNet->subscribe( handleIRTopicAny );
   iNet->subscribe( mqtt_topic_tv_hitach_youtube_on, handleIRTopicHitachiYoutubeFromScratch );
   iNet->subscribe( mqtt_topic_tv_hitach_youtube_initial_on, handleIRTopicHitachiYoutubeFromScratch );
   iNet->subscribe( mqtt_topic_tv_hitach_mute, handleIRTopicHitachiMute );
@@ -72,19 +74,23 @@ void setup()
   iNet->subscribe( mqtt_topic_tv_hitach_smart, handleIRTopicHitachiSmart );
   iNet->subscribe( mqtt_topic_tv_hitach_exit, handleIRTopicHitachiExit );
 
-  iNet->subscribe( mqtt_topic_tv_samsung_power, handleIRTopicSamsungPower );
-  iNet->subscribe( mqtt_topic_tv_samsung_volume_up, handleIRTopicSamsungVolumeUp );
-  iNet->subscribe( mqtt_topic_tv_samsung_volume_down, handleIRTopicSamsungVolumeDown );
-  iNet->subscribe( mqtt_topic_tv_samsung_volume_muteunmute, handleIRTopicSamsungVolumeMuteUnmute );
-  iNet->subscribe( mqtt_topic_tv_samsung_channel_up, handleIRTopicSamsungChannelUp );
-  iNet->subscribe( mqtt_topic_tv_samsung_channel_down, handleIRTopicSamsungChannelDown );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_up, handleIRTopicSamsungJoystickUp );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_down, handleIRTopicSamsungJoystickDown );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_left, handleIRTopicSamsungJoystickLeft );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_right, handleIRTopicSamsungJoystickRight );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_enter, handleIRTopicSamsungJoystickEnter );
-  iNet->subscribe( mqtt_topic_tv_samsung_numerical, handleIRTopicSamsungNumerical );
-  iNet->subscribe( mqtt_topic_tv_samsung_colordots, handleIRTopicSamsungColorDots );
+  static const auto emptyFunc = [](){};
+  iNet->subscribe( mqtt_topic_tv_samsung_power, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_volume_up, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_volume_down, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_volume_muteunmute, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_channel_up, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_channel_down, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_joystick_up, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_joystick_down, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_joystick_left, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_joystick_right, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_joystick_enter, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_numerical, emptyFunc );
+  iNet->subscribe( mqtt_topic_tv_samsung_colordots, emptyFunc );
+
+  IRTVControl.getSamsung().subscribe();
+  iNet->subscribe( handleIRTopicAny );
   
   taskRunnerAsync.init();
   
@@ -105,6 +111,21 @@ void reRunIRTask( int iterations )
   controlTask.set( 0, iterations, IRTVControl.getLoop() );
   taskRunnerAsync.addTask( controlTask );
   controlTask.enable();
+}
+void handleIRTopicAny( std::string topic )
+{
+  if( IRTVControl.getHitachi().process( topic ) )
+  {
+    reRunIRTask( 1 /*IRTVControl.getHitachi().getLoopsOnYoutubeFromScratchCount()*/ );
+  }
+  else if( IRTVControl.getSamsung().process( topic ) )
+  {
+    reRunIRTask( 1 /*IRTVControl.getSamsung().getLoopsOnYoutubeFromScratchCount()*/ );
+  }
+  else
+  {
+    Serial.println( "Handler wan't found" );
+  }
 }
 void handleIRTopicHitachiYoutubeFromScratch()
 {
@@ -165,97 +186,6 @@ void handleIRTopicHitachiJoystickEnter()
 {
   IRTVControl.getHitachi().prepareJoystickEnterHandler();
   reRunIRTask( IRTVControl.getHitachi().getLoopsOneCommandCount() );
-}
-void handleIRTopicSamsungPower()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungPowerHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungVolumeUp()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungVolumeUpHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungVolumeDown()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungVolumeDownHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungVolumeMuteUnmute()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungVolumeMuteUnmuteHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungChannelUp()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungChannelUpHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungChannelDown()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungChannelDownHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungJoystickUp()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungJoystickUpHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungJoystickDown()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungJoystickDownHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungJoystickLeft()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungJoystickLeftHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungJoystickRight()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungJoystickRightHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungJoystickEnter()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungJoystickEnterHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungNumerical()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungNumericalHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
-}
-void handleIRTopicSamsungColorDots()
-{
-  //Serial.println( "handleIRTopicSamsungPower 1" );
-  IRTVControl.getSamsung().prepareSamsungColorDotsHandler();
-  reRunIRTask( IRTVControl.getSamsung().getLoopsOneCommandCount() );
-  //Serial.println( "handleIRTopicSamsungPower 2" );
 }
 
 void loop()

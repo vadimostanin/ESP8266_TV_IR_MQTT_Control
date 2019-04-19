@@ -19,6 +19,23 @@ uint16_t rawDataSamsungColorDots[] = {};
 
 #define SIZEOF( ARRAY ) ( sizeof( ARRAY ) / sizeof( ARRAY[0] ) )
 
+namespace
+{
+  std::string mqtt_topic_tv_samsung_power = "tv_samsung_power";
+std::string mqtt_topic_tv_samsung_volume_up = "tv_samsung_volume_up";
+std::string mqtt_topic_tv_samsung_volume_down = "tv_samsung_volume_down";
+std::string mqtt_topic_tv_samsung_volume_muteunmute = "tv_samsung_volume_muteunmute";
+std::string mqtt_topic_tv_samsung_channel_up = "tv_samsung_channel_up";
+std::string mqtt_topic_tv_samsung_channel_down = "tv_samsung_channel_down";
+std::string mqtt_topic_tv_samsung_joystick_up = "tv_samsung_joystick_up";
+std::string mqtt_topic_tv_samsung_joystick_down = "tv_samsung_joystick_down";
+std::string mqtt_topic_tv_samsung_joystick_left = "tv_samsung_joystick_left";
+std::string mqtt_topic_tv_samsung_joystick_right = "tv_samsung_joystick_right";
+std::string mqtt_topic_tv_samsung_joystick_enter = "tv_samsung_joystick_enter";
+std::string mqtt_topic_tv_samsung_numerical = "tv_samsung_numerical";
+std::string mqtt_topic_tv_samsung_colordots = "tv_samsung_colordots";
+}
+
 IRTVSamsung::IRTVSamsung(): IRTVBase( 4 ), mStatusTopic( "SamsungStatus" )
 {
   ;
@@ -27,6 +44,40 @@ IRTVSamsung::IRTVSamsung(): IRTVBase( 4 ), mStatusTopic( "SamsungStatus" )
 int32_t IRTVSamsung::getLoopsOneCommandCount()
 {
   return 1;
+}
+
+void IRTVSamsung::subscribe()
+{
+  Serial.print( "subscribe called\n");
+  mTopicListeners[mqtt_topic_tv_samsung_power] = std::bind(&IRTVSamsung::prepareSamsungPowerHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_volume_up] = std::bind(&IRTVSamsung::prepareSamsungVolumeUpHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_volume_down] = std::bind(&IRTVSamsung::prepareSamsungVolumeDownHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_volume_muteunmute] = std::bind(&IRTVSamsung::prepareSamsungVolumeMuteUnmuteHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_channel_up] = std::bind(&IRTVSamsung::prepareSamsungChannelUpHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_channel_down] = std::bind(&IRTVSamsung::prepareSamsungChannelDownHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_joystick_up] = std::bind(&IRTVSamsung::prepareSamsungJoystickUpHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_joystick_down] = std::bind(&IRTVSamsung::prepareSamsungJoystickDownHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_joystick_left] = std::bind(&IRTVSamsung::prepareSamsungJoystickLeftHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_joystick_right] = std::bind(&IRTVSamsung::prepareSamsungJoystickRightHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_joystick_enter] = std::bind(&IRTVSamsung::prepareSamsungJoystickEnterHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_numerical] = std::bind(&IRTVSamsung::prepareSamsungNumericalHandler, this );
+  mTopicListeners[mqtt_topic_tv_samsung_colordots] = std::bind(&IRTVSamsung::prepareSamsungColorDotsHandler, this );
+}
+
+bool IRTVSamsung::process( std::string topic )
+{
+  bool result = false;
+  const auto foundListenerIter = mTopicListeners.find( topic );
+  if( foundListenerIter != std::end( mTopicListeners ) )
+  {
+    foundListenerIter->second();
+    result = true;
+  }
+  else
+  {
+    Serial.print( "Topic \""); Serial.print( topic.c_str() ); Serial.println( "\" not found" );
+  }
+  return result;
 }
 
 void IRTVSamsung::prepareSamsungPowerHandler()
