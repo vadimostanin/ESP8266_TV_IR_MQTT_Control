@@ -104,10 +104,10 @@ void NetworkingTask::publishPingMQTT()
     static char msg[50];
     static int counter = 0;
     ++counter;
-    snprintf( msg, 50, "hello world #%ld", counter );
+    snprintf( msg, 50, "ping #%ld", counter );
     Serial.print( "Publish message: " );
     Serial.println( msg );
-    mClient.publish( "outTopic", msg );
+    mClient.publish( "pingTopic", msg );
 
     // Once connected, publish an announcement...
 //    mClient.publish( "inTopic", "incomming message" );

@@ -17,13 +17,12 @@ void IRTVControlTask::init()
 
 void IRTVControlTask::loopFunc()
 {
-  std::function<void()> f = (*mHandler);
-  f();
+  (*mHandler)();
 }
 
 std::function<void()> IRTVControlTask::getLoop()
 {
-  auto func = [this](){ loopFunc(); };
+  const auto func = [this](){ loopFunc(); };
   return std::bind( func );
 }
 

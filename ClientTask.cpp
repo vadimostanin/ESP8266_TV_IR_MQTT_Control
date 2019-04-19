@@ -19,6 +19,6 @@ void ClientTask::setPubSubClient( PubSubClient & client )
 
 std::function<void()> ClientTask::getLoop()
 {
-  auto func = [this](){ loopFunc(); };
+  const auto func = [this](){ loopFunc(); };
   return std::bind( func );
 }
