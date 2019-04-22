@@ -1,41 +1,5 @@
 #include "IRTVSamsung.h"
 
-uint16_t rawDataSamsungPowerOn[] = {4536, 4440,  620, 1638,  618, 1638,  618, 1638,  618, 510,  618, 510,  616, 512,  616, 510,  618, 510,  618, 1638,  620, 1638,  618, 1638,  618, 510,  618, 512,  616, 510,  616, 510,  618, 510,  616, 510,  618, 1638,  618, 1638,  618, 510,  618, 510,  618, 1638,  618, 1638,  618, 1638,  620, 1638,  618, 510,  616, 510,  616, 1640,  618, 1638,  618, 510,  616, 512,  616, 512,  618, 45958,  4530, 4448,  618, 1640,  618, 1638,  618, 1638,  620, 510,  616, 512,  616, 510,  616, 510,  618, 510,  618, 1638,  618, 1638,  618, 1638,  618, 510,  618, 510,  618, 510,  618, 510,  618, 510,  616, 510,  618, 1638,  618, 1638,  618, 510,  618, 510,  618, 1638,  618, 1640,  618, 1638,  618, 1638,  618, 510,  618, 512,  616, 1638,  618, 1638,  620, 510,  624, 504,  618, 510,  618};  // SAMSUNG E0E06798
-uint16_t rawDataSamsungVolumeUp[] = {};
-uint16_t rawDataSamsungVolumeDown[] = {};
-uint16_t rawDataSamsungVolumeMuteUnmute[] = {};
-uint16_t rawDataSamsungChannelUp[] = {};
-uint16_t rawDataSamsungChannelDown[] = {};
-uint16_t rawDataSamsungBack[] = {};
-uint16_t rawDataSamsungHome[] = {};
-uint16_t rawDataSamsungPlayPause[] = {};
-uint16_t rawDataSamsungJoystickUp[] = {};
-uint16_t rawDataSamsungJoystickDown[] = {};
-uint16_t rawDataSamsungJoystickLeft[] = {};
-uint16_t rawDataSamsungJoystickRight[] = {};
-uint16_t rawDataSamsungJoystickEnter[] = {};
-uint16_t rawDataSamsungNumerical[] = {};
-uint16_t rawDataSamsungColorDots[] = {};
-
-#define SIZEOF( ARRAY ) ( sizeof( ARRAY ) / sizeof( ARRAY[0] ) )
-
-namespace
-{
-  std::string mqtt_topic_tv_samsung_power = "tv_samsung_power";
-std::string mqtt_topic_tv_samsung_volume_up = "tv_samsung_volume_up";
-std::string mqtt_topic_tv_samsung_volume_down = "tv_samsung_volume_down";
-std::string mqtt_topic_tv_samsung_volume_muteunmute = "tv_samsung_volume_muteunmute";
-std::string mqtt_topic_tv_samsung_channel_up = "tv_samsung_channel_up";
-std::string mqtt_topic_tv_samsung_channel_down = "tv_samsung_channel_down";
-std::string mqtt_topic_tv_samsung_joystick_up = "tv_samsung_joystick_up";
-std::string mqtt_topic_tv_samsung_joystick_down = "tv_samsung_joystick_down";
-std::string mqtt_topic_tv_samsung_joystick_left = "tv_samsung_joystick_left";
-std::string mqtt_topic_tv_samsung_joystick_right = "tv_samsung_joystick_right";
-std::string mqtt_topic_tv_samsung_joystick_enter = "tv_samsung_joystick_enter";
-std::string mqtt_topic_tv_samsung_numerical = "tv_samsung_numerical";
-std::string mqtt_topic_tv_samsung_colordots = "tv_samsung_colordots";
-}
-
 IRTVSamsung::IRTVSamsung(): IRTVBase( 4 ), mStatusTopic( "SamsungStatus" )
 {
   ;
@@ -49,19 +13,19 @@ int32_t IRTVSamsung::getLoopsOneCommandCount()
 void IRTVSamsung::subscribe()
 {
   Serial.print( "subscribe called\n");
-  mTopicListeners[mqtt_topic_tv_samsung_power] = std::bind(&IRTVSamsung::prepareSamsungPowerHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_volume_up] = std::bind(&IRTVSamsung::prepareSamsungVolumeUpHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_volume_down] = std::bind(&IRTVSamsung::prepareSamsungVolumeDownHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_volume_muteunmute] = std::bind(&IRTVSamsung::prepareSamsungVolumeMuteUnmuteHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_channel_up] = std::bind(&IRTVSamsung::prepareSamsungChannelUpHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_channel_down] = std::bind(&IRTVSamsung::prepareSamsungChannelDownHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_joystick_up] = std::bind(&IRTVSamsung::prepareSamsungJoystickUpHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_joystick_down] = std::bind(&IRTVSamsung::prepareSamsungJoystickDownHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_joystick_left] = std::bind(&IRTVSamsung::prepareSamsungJoystickLeftHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_joystick_right] = std::bind(&IRTVSamsung::prepareSamsungJoystickRightHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_joystick_enter] = std::bind(&IRTVSamsung::prepareSamsungJoystickEnterHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_numerical] = std::bind(&IRTVSamsung::prepareSamsungNumericalHandler, this );
-  mTopicListeners[mqtt_topic_tv_samsung_colordots] = std::bind(&IRTVSamsung::prepareSamsungColorDotsHandler, this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(power)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(power), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_up)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_up), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_down)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_down), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_muteunmute)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_muteunmute), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(channel_up)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(channel_up), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(channel_down)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(channel_down), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_up)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_up), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_down)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_down), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_left)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_left), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_right)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_right), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_enter)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_enter), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(numerical)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(numerical), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(colordots)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(colordots), this );
 }
 
 bool IRTVSamsung::process( std::string topic )
@@ -79,172 +43,3 @@ bool IRTVSamsung::process( std::string topic )
   }
   return result;
 }
-
-void IRTVSamsung::prepareSamsungPowerHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungPower, this );
-}
-
-void IRTVSamsung::handleTVSamsungPower()
-{
-  Serial.println( "TV Samsung Power On" );
-  mIrSend.sendRaw( rawDataSamsungPowerOn, SIZEOF( rawDataSamsungPowerOn ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "PoweredOn pressed" );
-}
-
-void IRTVSamsung::prepareSamsungVolumeUpHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungVolumeUp, this );
-}
-
-void IRTVSamsung::handleTVSamsungVolumeUp()
-{
-  Serial.println( "Volume Up" );
-  mIrSend.sendRaw( rawDataSamsungVolumeUp, SIZEOF( rawDataSamsungVolumeUp ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "VolumeUp pressed" );
-}
-
-void IRTVSamsung::prepareSamsungVolumeDownHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungVolumeDown, this );
-}
-
-void IRTVSamsung::handleTVSamsungVolumeDown()
-{
-  Serial.println( "Volume Down" );
-  mIrSend.sendRaw( rawDataSamsungVolumeDown, SIZEOF( rawDataSamsungVolumeDown ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "VolumeDown pressed" );
-}
-
-void IRTVSamsung::prepareSamsungVolumeMuteUnmuteHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungVolumeMuteUnmute, this );
-}
-
-void IRTVSamsung::handleTVSamsungVolumeMuteUnmute()
-{
-  Serial.println( "Volume Mute/Unmute" );
-  mIrSend.sendRaw( rawDataSamsungVolumeMuteUnmute, SIZEOF( rawDataSamsungVolumeMuteUnmute ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "Volume Mute/Unmute pressed" );
-}
-
-void IRTVSamsung::prepareSamsungChannelUpHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungChannelUp, this );
-}
-
-void IRTVSamsung::handleTVSamsungChannelUp()
-{
-  Serial.println( "Channel Up" );
-  mIrSend.sendRaw( rawDataSamsungChannelUp, SIZEOF( rawDataSamsungChannelUp ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "ChannelUp pressed" );
-}
-
-void IRTVSamsung::prepareSamsungChannelDownHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungChannelDown, this );
-}
-
-void IRTVSamsung::handleTVSamsungChannelDown()
-{
-  Serial.println( "Channel Down" );
-  mIrSend.sendRaw( rawDataSamsungChannelDown, SIZEOF( rawDataSamsungChannelDown ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "ChannelDown pressed" );
-}
-
-void IRTVSamsung::prepareSamsungJoystickUpHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungJoystickUp, this );
-}
-
-void IRTVSamsung::handleTVSamsungJoystickUp()
-{
-  Serial.println( "Joystick Up" );
-  mIrSend.sendRaw( rawDataSamsungJoystickUp, SIZEOF( rawDataSamsungJoystickUp ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "JoystickUp pressed" );
-}
-
-void IRTVSamsung::prepareSamsungJoystickDownHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungJoystickDown, this );
-}
-
-void IRTVSamsung::handleTVSamsungJoystickDown()
-{
-  Serial.println( "Joystick Down" );
-  mIrSend.sendRaw( rawDataSamsungJoystickDown, SIZEOF( rawDataSamsungJoystickDown ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "JoystickDown pressed" );
-}
-
-void IRTVSamsung::prepareSamsungJoystickLeftHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungJoystickLeft, this );
-}
-
-void IRTVSamsung::handleTVSamsungJoystickLeft()
-{
-  Serial.println( "JoystickLeft" );
-  mIrSend.sendRaw( rawDataSamsungJoystickLeft, SIZEOF( rawDataSamsungJoystickLeft ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "JoystickLeft pressed" );
-}
-
-void IRTVSamsung::prepareSamsungJoystickRightHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungJoystickRight, this );
-}
-
-void IRTVSamsung::handleTVSamsungJoystickRight()
-{
-  Serial.println( "JoystickRight" );
-  mIrSend.sendRaw( rawDataSamsungJoystickRight, SIZEOF( rawDataSamsungJoystickRight ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "JoystickRight pressed" );
-}
-
-void IRTVSamsung::prepareSamsungJoystickEnterHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungJoystickEnter, this );
-}
-
-void IRTVSamsung::handleTVSamsungJoystickEnter()
-{
-  mIrSend.sendRaw( rawDataSamsungJoystickEnter, SIZEOF( rawDataSamsungJoystickEnter ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "JoystickEnter pressed" );
-}
-
-void IRTVSamsung::prepareSamsungNumericalHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungNumerical, this );
-}
-
-void IRTVSamsung::handleTVSamsungNumerical()
-{
-  Serial.println( "Numerical" );
-  mIrSend.sendRaw( rawDataSamsungNumerical, SIZEOF( rawDataSamsungNumerical ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "Numerical pressed" );
-}
-
-void IRTVSamsung::prepareSamsungColorDotsHandler()
-{
-  resetSequence();
-  (*mHandler) = std::bind( &IRTVSamsung::handleTVSamsungColorDots, this );
-}
-
-void IRTVSamsung::handleTVSamsungColorDots()
-{
-  Serial.println( "ColorDots pressed" );
-  mIrSend.sendRaw( rawDataSamsungColorDots, SIZEOF( rawDataSamsungColorDots ), mIRFrequency );
-  mINet->publish( mStatusTopic.c_str(), "ColorDots pressed" );
-}
-
