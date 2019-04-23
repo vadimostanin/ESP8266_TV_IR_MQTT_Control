@@ -19,6 +19,9 @@ void IRTVSamsung::subscribe()
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_muteunmute)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_muteunmute), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(channel_up)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(channel_up), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(channel_down)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(channel_down), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(back)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(back), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(home)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(home), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(playpause)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(playpause), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_up)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_up), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_down)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_down), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_left)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_left), this );
