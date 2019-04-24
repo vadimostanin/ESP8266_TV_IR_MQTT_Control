@@ -1,6 +1,7 @@
 #ifndef __IRTV_SAMSUNG_H__
 #define __IRTV_SAMSUNG_H__
 #include "IRTVBase.h"
+#include "Common.hpp"
 #include <map>
 
 namespace
@@ -23,31 +24,9 @@ namespace
   uint16_t rawDataSamsungColorDots[] = {4530, 4448,  580, 1666,  608, 1640,  610, 1638,  606, 522,  606, 522,  580, 548,  604, 524,  578, 548,  580, 1668,  580, 1668,  608, 1640,  608, 522,  578, 548,  606, 522,  580, 548,  580, 546,  608, 520,  578, 1668,  582, 1668,  580, 1668,  580, 548,  606, 522,  606, 1642,  606, 1642,  606, 1642,  580, 546,  604, 526,  606, 522,  606, 1642,  580, 1670,  606, 522,  578, 550,  580, 46108,  4526, 4450,  580, 1666,  612, 1636,  580, 1668,  582, 548,  580, 548,  606, 522,  608, 520,  608, 520,  578, 1668,  580, 1668,  582, 1668,  580, 548,  578, 550,  578, 548,  580, 548,  580, 548,  608, 520,  578, 1668,  606, 1640,  582, 1666,  580, 548,  606, 522,  602, 1644,  606, 1642,  578, 1670,  606, 524,  578, 548,  578, 548,  606, 1642,  580, 1668,  580, 550,  604, 524,  606};  // SAMSUNG E0E0738C
 }
 
-#define SIZEOF( ARRAY ) ( sizeof( ARRAY ) / sizeof( ARRAY[0] ) )
-
-#define IRTOPIC_FUNC_PREPARE(devtype, devmodel, devcommand, rawBytes)\
-void prepare_##devtype##_##devmodel##_##devcommand()\
-{\
-  resetSequence();\
-  (*mHandler) = std::bind( &IRTVSamsung::handle_##devtype##_##devmodel##_##devcommand, this );\
-}\
-void handle_##devtype##_##devmodel##_##devcommand()\
-{\
-  /*Serial.println( "##devtype## ##devmodel## ##devcommand On" );*/\
-  mIrSend.sendRaw( rawBytes, SIZEOF( rawBytes ), mIRFrequency );\
-  mINet->publish( mStatusTopic.c_str(), "##devtype## ##devmodel## ##devcommand" );\
-}
-#define IRTOPIC_FUNC_PREPARE_GET(devtype, devmodel, devcommand) prepare_##devtype##_##devmodel##_##devcommand
-#define IRTOPIC_TVSAM_FUNC_PREPARE_GET(devcommand) IRTOPIC_FUNC_PREPARE_GET(tv, samsung, devcommand)
-#define IRTOPIC_STR(devtype, devmodel, devcommand) std::string mqtt_topic_##devtype##_##devmodel##_##devcommand = "##devtype##_##devmodel##_##dev_command";
-#define IRTOPIC_STR_GET(dev_type, dev_model, dev_command) mqtt_topic_##dev_type##_##dev_model##_##dev_command
 #define IRTOPIC_TVSAM_STR_GET(dev_command) IRTOPIC_STR_GET(tv, samsung, dev_command)
-
-#define IRTOPIC_STR_AND_FUNC(devtype, devmodel, devcommand, rawBytes)\
-IRTOPIC_STR(devtype, devmodel, devcommand)\
-IRTOPIC_FUNC_PREPARE(devtype, devmodel, devcommand, rawBytes)
-
-#define IRTOPIC_TVSAM_STR_AND_FUNC(devcommand, rawBytes) IRTOPIC_STR_AND_FUNC(tv, samsung, devcommand, rawBytes)
+#define IRTOPIC_TVSAM_FUNC_PREPARE_GET(devcommand) IRTVSamsung::IRTOPIC_FUNC_PREPARE_GET(tv, samsung, devcommand)
+#define IRTOPIC_TVSAM_STR_AND_FUNC(devcommand, rawBytes) IRTOPIC_STR_AND_FUNC(tv, samsung, devcommand, rawBytes, IRTVSamsung)
 
 class IRTVSamsung : public IRTVBase
 {

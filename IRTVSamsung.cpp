@@ -13,22 +13,22 @@ int32_t IRTVSamsung::getLoopsOneCommandCount()
 void IRTVSamsung::subscribe()
 {
   Serial.print( "subscribe called\n");
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(power)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(power), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_up)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_up), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_down)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_down), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_muteunmute)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_muteunmute), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(channel_up)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(channel_up), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(channel_down)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(channel_down), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(back)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(back), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(home)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(home), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(playpause)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(playpause), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_up)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_up), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_down)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_down), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_left)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_left), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_right)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_right), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_enter)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_enter), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(numerical)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(numerical), this );
-  mTopicListeners[IRTOPIC_TVSAM_STR_GET(colordots)] = std::bind(&IRTVSamsung::IRTOPIC_TVSAM_FUNC_PREPARE_GET(colordots), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(power)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(power), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_up)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_up), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_down)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_down), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_muteunmute)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_muteunmute), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(channel_up)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(channel_up), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(channel_down)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(channel_down), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(back)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(back), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(home)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(home), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(playpause)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(playpause), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_up)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_up), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_down)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_down), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_left)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_left), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_right)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_right), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_enter)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_enter), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(numerical)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(numerical), this );
+  mTopicListeners[IRTOPIC_TVSAM_STR_GET(colordots)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(colordots), this );
 }
 
 bool IRTVSamsung::process( std::string topic )
