@@ -32,19 +32,6 @@ std::string mqtt_topic_tv_hitach_joystick_left = "tv_hitachi_joystick_left";
 std::string mqtt_topic_tv_hitach_joystick_enter = "tv_hitachi_joystick_enter";
 std::string mqtt_topic_tv_hitach_smart = "tv_hitachi_smart";
 std::string mqtt_topic_tv_hitach_exit = "tv_hitachi_exit";
-std::string mqtt_topic_tv_samsung_power = "tv_samsung_power";
-std::string mqtt_topic_tv_samsung_volume_up = "tv_samsung_volume_up";
-std::string mqtt_topic_tv_samsung_volume_down = "tv_samsung_volume_down";
-std::string mqtt_topic_tv_samsung_volume_muteunmute = "tv_samsung_volume_muteunmute";
-std::string mqtt_topic_tv_samsung_channel_up = "tv_samsung_channel_up";
-std::string mqtt_topic_tv_samsung_channel_down = "tv_samsung_channel_down";
-std::string mqtt_topic_tv_samsung_joystick_up = "tv_samsung_joystick_up";
-std::string mqtt_topic_tv_samsung_joystick_down = "tv_samsung_joystick_down";
-std::string mqtt_topic_tv_samsung_joystick_left = "tv_samsung_joystick_left";
-std::string mqtt_topic_tv_samsung_joystick_right = "tv_samsung_joystick_right";
-std::string mqtt_topic_tv_samsung_joystick_enter = "tv_samsung_joystick_enter";
-std::string mqtt_topic_tv_samsung_numerical = "tv_samsung_numerical";
-std::string mqtt_topic_tv_samsung_colordots = "tv_samsung_colordots";
 std::string mqtt_topic_any = "*";
 
 void setup()
@@ -73,21 +60,6 @@ void setup()
   iNet->subscribe( mqtt_topic_tv_hitach_joystick_enter, handleIRTopicHitachiJoystickEnter );
   iNet->subscribe( mqtt_topic_tv_hitach_smart, handleIRTopicHitachiSmart );
   iNet->subscribe( mqtt_topic_tv_hitach_exit, handleIRTopicHitachiExit );
-
-  static const auto emptyFunc = [](){};
-  iNet->subscribe( mqtt_topic_tv_samsung_power, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_volume_up, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_volume_down, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_volume_muteunmute, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_channel_up, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_channel_down, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_up, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_down, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_left, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_right, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_joystick_enter, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_numerical, emptyFunc );
-  iNet->subscribe( mqtt_topic_tv_samsung_colordots, emptyFunc );
 
   IRTVControl.getSamsung().subscribe();
   iNet->subscribe( handleIRTopicAny );

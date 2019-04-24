@@ -13,6 +13,7 @@ int32_t IRTVSamsung::getLoopsOneCommandCount()
 void IRTVSamsung::subscribe()
 {
   Serial.print( "subscribe called\n");
+  Serial.printf( "subscribe %s topic", IRTOPIC_TVSAM_STR_GET(power).c_str());
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(power)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(power), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_up)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_up), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(volume_down)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(volume_down), this );
@@ -29,6 +30,12 @@ void IRTVSamsung::subscribe()
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(joystick_enter)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(joystick_enter), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(numerical)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(numerical), this );
   mTopicListeners[IRTOPIC_TVSAM_STR_GET(colordots)] = std::bind(& IRTOPIC_TVSAM_FUNC_PREPARE_GET(colordots), this );
+
+  static const auto emptyFunc = [](){};
+  for( const auto & topicInfo : mTopicListeners )
+  {
+    mINet->subscribe( topicInfo.first, emptyFunc );
+  }
 }
 
 bool IRTVSamsung::process( std::string topic )
@@ -37,12 +44,13 @@ bool IRTVSamsung::process( std::string topic )
   const auto foundListenerIter = mTopicListeners.find( topic );
   if( foundListenerIter != std::end( mTopicListeners ) )
   {
+    Serial.print( "Samsung::processed Topic \""); Serial.print( topic.c_str() ); Serial.println( "\" processed" );
     foundListenerIter->second();
     result = true;
   }
   else
   {
-    Serial.print( "Topic \""); Serial.print( topic.c_str() ); Serial.println( "\" not found" );
+    Serial.print( "Samsung::processed Topic \""); Serial.print( topic.c_str() ); Serial.println( "\" not found" );
   }
   return result;
 }
