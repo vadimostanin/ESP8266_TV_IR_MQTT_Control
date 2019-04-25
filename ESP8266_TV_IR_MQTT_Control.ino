@@ -36,13 +36,14 @@ std::string mqtt_topic_any = "*";
 
 void setup()
 {
-  Serial.begin( 9600 );
+  //Serial.begin( 9600 );
   
-  while( ! Serial )  // Wait for the serial connection to be establised.
+/*  while( ! Serial )  // Wait for the serial connection to be establised.
   {
     delay( 100 );
   }
   Serial.println( "setup enter" );
+*/
   Networking->init();
   IRTVControl.init();
   std::shared_ptr<ISubPub> iNet = Networking;
@@ -62,7 +63,6 @@ void setup()
   iNet->subscribe( mqtt_topic_tv_hitach_exit, handleIRTopicHitachiExit );
 
   IRTVControl.getSamsung().subscribe();
-  iNet->subscribe( handleIRTopicAny );
   
   taskRunnerAsync.init();
   
@@ -75,7 +75,7 @@ void setup()
   netTask.enable();
   pubSubClientTask.enable();
   
-  Serial.println( "setup leave" );
+  //Serial.println( "setup leave" );
 }
 
 void reRunIRTask( int iterations )
@@ -86,6 +86,7 @@ void reRunIRTask( int iterations )
 }
 void handleIRTopicAny( std::string topic )
 {
+  //Serial.printf( "handleIRTopicAny called\n" );
   if( IRTVControl.getHitachi().process( topic ) )
   {
     reRunIRTask( 1 /*IRTVControl.getHitachi().getLoopsOnYoutubeFromScratchCount()*/ );
@@ -96,7 +97,7 @@ void handleIRTopicAny( std::string topic )
   }
   else
   {
-    Serial.println( "Handler wan't found" );
+    //Serial.println( "Handler wan't found" );
   }
 }
 void handleIRTopicHitachiYoutubeFromScratch()
@@ -162,6 +163,7 @@ void handleIRTopicHitachiJoystickEnter()
 
 void loop()
 {
+//  ESP.deepSleep(1000, WAKE_RFCAL);
   taskRunnerAsync.execute();
 }
 

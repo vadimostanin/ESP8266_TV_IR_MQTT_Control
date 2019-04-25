@@ -7,7 +7,7 @@ ClientTask::ClientTask( PubSubClient & client ) : mClient( client )
 
 void ClientTask::loopFunc()
 {
-//  Serial.print( "ClientTask mClient.connected()=" );Serial.println( mClient.connected() );
+  //Serial.print( "ClientTask mClient.connected()=" );Serial.println( mClient.connected() );
   mClient.loop();
   delay( 100 );
 }

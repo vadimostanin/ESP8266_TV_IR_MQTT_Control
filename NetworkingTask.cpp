@@ -57,13 +57,15 @@ bool NetworkingTask::connectWiFi()
   // подключаемся к wi-fi
   if( WiFi.status() != WL_CONNECTED )
   {
+/*
     Serial.print( "Connecting to " );
     Serial.print( ssid );
     Serial.println( "..." );
+*/
     WiFi.begin( ssid, pass );
     
     result = WiFi.waitForConnectResult() == WL_CONNECTED;
-
+/*
     if( result )
     {
       Serial.println( "WiFi connected" );
@@ -72,12 +74,14 @@ bool NetworkingTask::connectWiFi()
     {
       Serial.println( "WiFi can't be connected" );
     }
+*/
   }
   return result;
 }
 
 void NetworkingTask::callbackTopic(char* topic, unsigned char* payload, unsigned int length)
 {
+  /*
   Serial.print( "Message arrived [" );
   Serial.print( topic );
   Serial.print( "] " );
@@ -86,6 +90,7 @@ void NetworkingTask::callbackTopic(char* topic, unsigned char* payload, unsigned
     Serial.print( ( char ) payload[i] );
   }
   Serial.println();
+  */
   const auto foundListenerIter = mConcreteTopicListeners.find( topic );
   if( foundListenerIter != std::end( mConcreteTopicListeners ) )
   {
@@ -93,10 +98,12 @@ void NetworkingTask::callbackTopic(char* topic, unsigned char* payload, unsigned
   }
   else
   {
-    Serial.print( "Topic \""); Serial.print( topic ); Serial.println( "\" not found" );
+    //Serial.print( "Topic \""); Serial.print( topic ); Serial.println( "\" not found" );
   }
+  //Serial.printf( "NetworkingTask::callbackTopic: mAnyTopicListeners.size()=%d\n", mAnyTopicListeners.size() );
   for( const auto anyTopicListener : mAnyTopicListeners )
   {
+    //Serial.printf( "NetworkingTask::callbackTopic: anyTopicListener\n" );
     anyTopicListener( topic );
   }
 }
@@ -105,15 +112,15 @@ void NetworkingTask::publishPingMQTT()
 {
   const long now = millis();
   static long lastMsg = now;
-  if( ( now - lastMsg ) > 5000 )
+  if( ( now - lastMsg ) > 10 * 1000 )
   {
     lastMsg = now;
     static char msg[50];
     static int counter = 0;
     ++counter;
-    snprintf( msg, 50, "ping #%ld", counter );
-    Serial.print( "Publish message: " );
-    Serial.println( msg );
+    snprintf( msg, 50, "ping #%ld\0", counter );
+    //Serial.print( "Publish message: " );
+    //Serial.println( msg );
     mClient.publish( "pingTopic", msg );
 
     // Once connected, publish an announcement...
@@ -123,20 +130,20 @@ void NetworkingTask::publishPingMQTT()
 
 void NetworkingTask::reconnectMQTT()
 {
-  Serial.print( "NetworkingTask mClient.connected()=" );Serial.println( mClient.connected() );
+  //Serial.print( "NetworkingTask mClient.connected()=" );Serial.println( mClient.connected() );
   // Loop until we're reconnected
   if( !mClient.connected() )
   {
-    Serial.print( "Attempting MQTT connection..." );
+    //Serial.print( "Attempting MQTT connection..." );
     // Attempt to connect
     if( mClient.connect( mqtt_key, mqtt_user, mqtt_pass ) )
     {
-      Serial.println( "connected" );
+      //Serial.println( "connected" );
       // ... and resubscribe
       mClient.subscribe( "inTopic" );
       for( auto & topic : mConcreteTopicListeners )
       {
-        Serial.print( "Subscribing to " );Serial.println( topic.first.c_str() );
+        //Serial.print( "Subscribing to " );Serial.println( topic.first.c_str() );
         mClient.subscribe( topic.first.c_str() );
         mClient.loop();
       }
@@ -154,9 +161,9 @@ void NetworkingTask::reconnectMQTT()
 
 void NetworkingTask::subscribe( const std::string & topic, const std::function<void()> & callback )
 {
-  Serial.print( "add topic.c_str()=" );
-  Serial.print( topic.c_str() );
-  Serial.println( " to queue" );
+  //Serial.print( "add topic.c_str()=" );
+  //Serial.print( topic.c_str() );
+  //Serial.println( " to queue" );
   auto foundListenerIter = mConcreteTopicListeners.find( topic );
   if( foundListenerIter == std::end( mConcreteTopicListeners ) )
   {
@@ -178,6 +185,7 @@ void NetworkingTask::subscribe( const std::string & topic, const std::function<v
 
 void NetworkingTask::subscribe( const std::function<void(std::string)> & callback )
 {
+  //Serial.printf( "NetworkingTask::subscribe called\n" );
   mAnyTopicListeners.push_back( callback );
 }
 

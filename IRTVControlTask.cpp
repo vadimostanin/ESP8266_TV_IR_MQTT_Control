@@ -34,7 +34,7 @@ void IRTVControlTask::setINet( std::shared_ptr<ISubPub> iNet )
 
 void IRTVControlTask::emptyHandler()
 {
-  Serial.print( __FUNCTION__ );Serial.println( " was called" );
+  //Serial.print( __FUNCTION__ );Serial.println( " was called" );
 }
 
 IRTVHitachi & IRTVControlTask::getHitachi()
